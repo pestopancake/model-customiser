@@ -1,6 +1,5 @@
 /**
-todo:
-- loading overlay
+feature todo:
 - model selection
  - tree menu & end at a model?
 - model options:
@@ -8,10 +7,21 @@ todo:
  - image
  - pattern
   - colour scheme
+
+misc todo:
+- loading overlay
+
+Tidy up:
+- pre fetch / cache assets
+- vuex
+- promises
+- mixin / component anything?
 */
 <template>
   <div class="model">
-    <button @click.prevent="init()">init</button>
+    <input type="text" v-model="text"  @change="setMaterial()">
+    <input type="color" id="color" name="color" v-model="selectedColour" @change="setMaterial()">
+    <button @click.prevent="setMaterial()">refresh material</button>
     <div id="loading-overlay" v-show="isLoading">Loading</div>
     <canvas id="c"></canvas>
   </div>
@@ -36,6 +46,8 @@ export default {
   name: "Home",
   data() {
     return {
+      text: 'hello world',
+      selectedColour: '#ff9900',
       isLoading: true,
       activeModelPath: "/gltf/jersey1/scene.gltf",
       activeModel: null,
@@ -47,14 +59,13 @@ export default {
     };
   },
   mounted() {
+    // this.reset();
     this.init();
     this.loadModel();
   },
   methods: {
     init() {
       console.log("mount ran");
-
-      // this.reset();
 
       const BACKGROUND_COLOR = 0xf1f1f1;
       // Init the scene
@@ -122,19 +133,19 @@ export default {
 
       // Add controls
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-      this.controls.maxPolarAngle = Math.PI;
-      this.controls.minPolarAngle = 0;
+      this.controls.maxPolarAngle = Math.PI / 2;
+      this.controls.minPolarAngle = Math.PI / 2;
       this.controls.enableDamping = true;
       this.controls.enablePan = false;
       this.controls.dampingFactor = 0.1;
-      this.controls.autoRotate = false; // Toggle this if you'd like the chair to automatically rotate
-      this.controls.autoRotateSpeed = 0.2; // 30
+      this.controls.autoRotate = false;
+      this.controls.autoRotateSpeed = 8;
 
       this.animate();
     },
-    loadModel(modelPath = null){
-      if(modelPath) this.activeModelPath = modelPath;
-      if(!this.activeModelPath) return false;
+    loadModel(modelPath = null) {
+      if (modelPath) this.activeModelPath = modelPath;
+      if (!this.activeModelPath) return false;
       var vm = this;
 
       var loader = new GLTFLoader();
@@ -169,6 +180,112 @@ export default {
           console.error(error);
         }
       );
+    },
+    setMaterial() {
+      var vm = this;
+      let color = {
+        canvas: true,
+        color: "ff9900",
+        shininess: 50,
+      };
+
+      var new_mtl;
+
+      var canvas = document.createElement("canvas");
+      canvas.id = "texturecanvas";
+      canvas.style.position = "fixed";
+      canvas.style.top = "0";
+      canvas.style.right = "0";
+      var context = canvas.getContext("2d");
+      var texture = new THREE.Texture(canvas);
+      var texture2;
+      // texture.rotation = -0.8;
+      // texture.repeat.set(1,1,1);
+      // texture.wrapS = THREE.RepeatWrapping;
+      // texture.wrapT = THREE.RepeatWrapping;
+      texture.flipY = 0;
+      texture.flipX = 0;
+
+      var imageObj = new Image();
+      imageObj.src =
+        "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg";
+      imageObj.onload = function () {
+        canvas.width = imageObj.width;
+        canvas.height = imageObj.height;
+
+        context.drawImage(
+          imageObj,
+          0,
+          0,
+          imageObj.width,
+          imageObj.height,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        //flip the context to draw assets bellow upside down
+
+        // context.restore();
+        texture.needsUpdate = true;
+
+        fetch("/gltf/jersey1/textures/colourmap.svg")
+          .then((response) => response.text())
+          .then(function (svgStr) {
+            // var svgobj = SVG(svgStr);
+            // console.log(svgobj);
+            svgStr = svgStr.replace("#ff9900", vm.selectedColour);
+
+            var imgObj3 = new Image();
+            // imgObj3.src = 'models/grape_ride_20_ssjersey_ss_jersey_line/textures/colourmap.svg';
+            imgObj3.src =
+              "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+            texture2 = new THREE.Texture(
+              "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr)
+            );
+            texture2.needsUpdate = true;
+            imgObj3.onload = function () {
+              context.drawImage(imgObj3, 0, 0);
+
+              context.translate(0, canvas.height); //location on the canvas to draw your sprite, this is important.
+              context.scale(1, -1); //This does your mirroring/flipping
+
+              var imgObj2 = new Image();
+              imgObj2.src = "img/pattern_.jpg";
+              imgObj2.onload = function () {
+                context.drawImage(imgObj2, 1200, 650, 200, 200);
+
+                //test writing text
+                context.font = "24px Arial";
+                context.fillStyle = "red";
+                context.fillText(vm.text, 1200, 600);
+                texture.needsUpdate = true;
+              };
+
+              // dev: to see canvas
+              // var dataURL = canvas.toDataURL();
+              // document.getElementById("canvaspreview").src = dataURL;
+            };
+            
+          });
+      };
+
+      new_mtl = new THREE.MeshPhongMaterial({
+        map: texture,
+        shininess: color.shininess ? color.shininess : 10,
+      });
+
+      vm.activeModel.traverse((o) => {
+        if (o.isMesh && o.name != null) {
+          if (o.name == 'mainmesh') {
+            o.material = new_mtl;
+          }
+        }
+      });
+      
+      // var body = document.getElementsByTagName("body")[0];
+      // body.appendChild(canvas);
     },
     reset() {
       this.isLoading = true;
@@ -221,9 +338,9 @@ export default {
       return needResize;
     },
   },
-  beforeDestroy(){
-    console.log('destroying');
+  beforeDestroy() {
+    console.log("destroying");
     this.reset();
-  }
+  },
 };
 </script>

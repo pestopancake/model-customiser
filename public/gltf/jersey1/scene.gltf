@@ -743,31 +743,31 @@
     },
     {
       "mesh": 0,
-      "name": ""
+      "name": "a"
     },
     {
       "mesh": 1,
-      "name": ""
+      "name": "b"
     },
     {
       "mesh": 2,
-      "name": ""
+      "name": "c"
     },
     {
       "mesh": 3,
-      "name": ""
+      "name": "d"
     },
     {
       "mesh": 4,
-      "name": "legs"
+      "name": "mainmesh"
     },
     {
       "mesh": 5,
-      "name": ""
+      "name": "f"
     },
     {
       "mesh": 6,
-      "name": ""
+      "name": "g"
     }
   ],
   "samplers": [
