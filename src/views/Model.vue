@@ -18,38 +18,58 @@ Tidy up:
 - mixin / component anything?
 */
 <template>
-  <div class="model">
-    <input type="text" v-model="text"  @change="setMaterial()">
-    <input type="color" id="color" name="color" v-model="selectedColour" @change="setMaterial()">
-    <button @click.prevent="setMaterial()">refresh material</button>
+  <div id="wrapper">
     <div id="loading-overlay" v-show="isLoading">Loading</div>
     <canvas id="c"></canvas>
+
+    <div id="ui">
+      <input type="text" v-model="text" @change="setMaterial()" />
+      <input
+        type="color"
+        id="color"
+        name="color"
+        v-model="selectedColour"
+        @change="setMaterial()"
+      />
+      <button @click.prevent="setMaterial()">refresh material</button>
+
+      <div id="colour-swatches">
+        <template
+          v-for="colour in ['#ff9900', '#ff0099', '#00ff99', '#0099ff', '#9900ff', '#99ff00']"
+        >
+          <div
+            class="colour-swatch"
+            :style="{ 'background-color': colour }"
+            :key="colour"
+            v-on:mouseover="
+              selectedColour = colour;
+              setMaterial();
+            "
+          ></div>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
-<style scoped>
-#c {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: block;
-  position: fixed;
-  z-index: -1;
-}
-</style>
 <script>
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { Box3 } from 'three';
 
 export default {
   name: "Home",
   data() {
     return {
-      text: 'hello world',
-      selectedColour: '#ff9900',
+      text: "hello world",
+      selectedColour: "#ff9900",
       isLoading: true,
       activeModelPath: "/gltf/jersey1/scene.gltf",
+      activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+      activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
+      // activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
+      // activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
+      // activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
       activeModel: null,
       controls: null,
       renderer: null,
@@ -97,6 +117,7 @@ export default {
       );
       this.camera.position.z = cameraFar;
       this.camera.position.x = 0;
+      this.camera.zoom = 1;
 
       // Add lights
       var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
@@ -111,7 +132,7 @@ export default {
       // Add directional Light to scene
       this.scene.add(dirLight);
 
-      var dirLight2 = new THREE.DirectionalLight(0xeeeeff, 0.2);
+      var dirLight2 = new THREE.DirectionalLight(0xeeeeff, 0.45);
       dirLight2.position.set(8, 12, 8);
       dirLight2.castShadow = true;
       dirLight2.shadow.mapSize = new THREE.Vector2(1024, 1024);
@@ -133,8 +154,13 @@ export default {
 
       // Add controls
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-      this.controls.maxPolarAngle = Math.PI / 2;
-      this.controls.minPolarAngle = Math.PI / 2;
+      // this.controls.maxPolarAngle = Math.PI / 2;
+      // this.controls.minPolarAngle = Math.PI / 2;
+      this.controls.maxPolarAngle = Math.PI;
+      this.controls.minPolarAngle = 0;
+      this.controls.minDistance = 1;
+      // this.controls.maxDistance = 3.5;
+      this.controls.zoomSpeed = 0.5;
       this.controls.enableDamping = true;
       this.controls.enablePan = false;
       this.controls.dampingFactor = 0.1;
@@ -153,27 +179,39 @@ export default {
       loader.load(
         this.activeModelPath,
         function (gltf) {
+          console.log(gltf);
           vm.activeModel = gltf.scene;
 
           vm.activeModel.traverse((o) => {
             if (o.isMesh) {
               o.castShadow = true;
               o.receiveShadow = true;
+              // o.geometry.center();
             }
           });
 
           // Set the models initial scale
-          vm.activeModel.scale.set(2, 2, 2);
+          // vm.activeModel.scale.set(2, 2, 2);
+
+          var bbox = new Box3().setFromObject(vm.activeModel);
+          var scale = 1 / (bbox.max.x - bbox.min.x);
+          // console.log(scale);
+          // var scale = 0.001;
+          console.log(scale)
+          vm.activeModel.scale.set(scale,scale,scale);
           // theModel.rotation.y = Math.PI; // to rotate 180
 
           // Offset the y position a bit
           vm.activeModel.position.y = 0;
+          // vm.activeModel.position.z = -1;
 
           // Add the model to the scene
           vm.scene.add(vm.activeModel);
 
           // Remove the loader
           vm.isLoading = false;
+
+          vm.setMaterial();
         },
         undefined,
         function (error) {
@@ -207,8 +245,7 @@ export default {
       texture.flipX = 0;
 
       var imageObj = new Image();
-      imageObj.src =
-        "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg";
+      imageObj.src = this.activeModelTexture;
       imageObj.onload = function () {
         canvas.width = imageObj.width;
         canvas.height = imageObj.height;
@@ -230,7 +267,7 @@ export default {
         // context.restore();
         texture.needsUpdate = true;
 
-        fetch("/gltf/jersey1/textures/colourmap.svg")
+        fetch(vm.activeColourMap)
           .then((response) => response.text())
           .then(function (svgStr) {
             // var svgobj = SVG(svgStr);
@@ -261,31 +298,33 @@ export default {
                 context.fillStyle = "red";
                 context.fillText(vm.text, 1200, 600);
                 texture.needsUpdate = true;
+
+                new_mtl = new THREE.MeshPhongMaterial({
+                  map: texture,
+                  shininess: color.shininess ? color.shininess : 10,
+                });
+
+                vm.replaceMaterial(new_mtl);
               };
 
               // dev: to see canvas
               // var dataURL = canvas.toDataURL();
               // document.getElementById("canvaspreview").src = dataURL;
             };
-            
           });
       };
 
-      new_mtl = new THREE.MeshPhongMaterial({
-        map: texture,
-        shininess: color.shininess ? color.shininess : 10,
-      });
-
-      vm.activeModel.traverse((o) => {
+      // var body = document.getElementsByTagName("body")[0];
+      // body.appendChild(canvas);
+    },
+    replaceMaterial(newMaterial) {
+      this.activeModel.traverse((o) => {
         if (o.isMesh && o.name != null) {
-          if (o.name == 'mainmesh') {
-            o.material = new_mtl;
+          if (o.name == "mainmesh") {
+            o.material = newMaterial;
           }
         }
       });
-      
-      // var body = document.getElementsByTagName("body")[0];
-      // body.appendChild(canvas);
     },
     reset() {
       this.isLoading = true;
@@ -344,3 +383,36 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+#wrapper{
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: block;
+  position: fixed;
+}
+#c {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: block;
+  position: fixed;
+  z-index: -1;
+}
+#ui {
+  border-top: 5px solid #d0d0d0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.colour-swatch {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+</style>
