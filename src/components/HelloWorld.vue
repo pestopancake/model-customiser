@@ -45,6 +45,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.hello{
+  background-color: rgba(255,255,255,0.9);
+  padding: 20px;
+}
 h3 {
   margin: 40px 0 0;
 }

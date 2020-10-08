@@ -5,6 +5,7 @@
       <router-link to="/about">About</router-link> | 
       <router-link to="/model">Model</router-link>
     </div>
+    <img alt="Vue logo" src="./assets/logo.png" v-show="$store.state.isLoading">
     <router-view/>
   </div>
 </template>
@@ -29,5 +30,14 @@
       color: #42b983;
     }
   }
+}
+#c {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: block;
+  position: fixed;
+  z-index: -1;
 }
 </style>

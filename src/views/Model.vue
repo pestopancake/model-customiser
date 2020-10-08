@@ -55,7 +55,7 @@ Tidy up:
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Box3 } from 'three';
+import ThreeJSHelper from "../lib/ThreeJSHelper";
 
 export default {
   name: "Home",
@@ -193,7 +193,7 @@ export default {
           // Set the models initial scale
           // vm.activeModel.scale.set(2, 2, 2);
 
-          var bbox = new Box3().setFromObject(vm.activeModel);
+          var bbox = new THREE.Box3().setFromObject(vm.activeModel);
           var scale = 1 / (bbox.max.x - bbox.min.x);
           // console.log(scale);
           // var scale = 0.001;
@@ -351,7 +351,7 @@ export default {
       this.renderer.render(this.scene, this.camera);
       this.animationFrameRequestId = requestAnimationFrame(this.animate);
 
-      if (this.resizeRendererToDisplaySize(this.renderer)) {
+      if (ThreeJSHelper.resizeRendererToDisplaySize(this.renderer)) {
         const canvas = this.renderer.domElement;
         this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
         this.camera.updateProjectionMatrix();
@@ -391,15 +391,6 @@ export default {
   left: 0;
   display: block;
   position: fixed;
-}
-#c {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: block;
-  position: fixed;
-  z-index: -1;
 }
 #ui {
   border-top: 5px solid #d0d0d0;
