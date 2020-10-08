@@ -131,6 +131,7 @@ export default {
   justify-content: center;
   padding: 10px;
   .model{
+    cursor: pointer;
     padding: 10px 20px;
     background-color: rgba(200,200,200, 0.5);
   }
