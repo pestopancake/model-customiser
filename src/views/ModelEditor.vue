@@ -24,6 +24,21 @@ Tidy up:
       <div class="text-input-wrapper">
         <input type="text" class="text-input" v-model="$store.state.text" @change="$store.dispatch('setMaterial')" />
       </div>
+      <div id="models">
+        <template
+          v-for="model in $store.state.models"
+        >
+          <div
+            class="model"
+            :key="model.id"
+            v-on:click="
+              $store.dispatch('selectModel', model);
+            "
+          >
+            {{model.displayName}}
+          </div>
+        </template>
+      </div>
       <div id="colour-swatches">
         <template
           v-for="colour in ['#ff9900', '#ff0099', '#00ff99', '#0099ff', '#9900ff', '#99ff00']"
@@ -109,6 +124,15 @@ export default {
     padding: 10px;
     margin: 10px;
     width: 50vw;
+  }
+}
+#models{
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  .model{
+    padding: 10px 20px;
+    background-color: rgba(200,200,200, 0.5);
   }
 }
 </style>

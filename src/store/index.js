@@ -1,3 +1,8 @@
+/**
+ * todo:
+ * don't reset everything to change model, just remove existing model
+ */
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -24,14 +29,30 @@ export default new Vuex.Store({
     controls: null,
     activeModel: null,
     // config
+    models: [
+      {
+        id: 1,
+        displayName: 'Jersey',
+        activeModelPath: "/gltf/jersey1/scene.gltf",
+        activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+        activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
+      },
+      {
+        id: 2,
+        displayName: 'T-Shirt',
+        activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
+        activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
+        activeColourMap: "/gltf/tshirt1fixed/textures/colourmap.svg",
+      }
+    ],
     text: "hello world",
     selectedColour: "#ff9900",
-    // activeModelPath: "/gltf/jersey1/scene.gltf",
-    // activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
-    // activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
-    activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
-    activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
-    activeColourMap: "/gltf/tshirt1fixed/textures/colourmap.svg",
+    activeModelPath: "/gltf/jersey1/scene.gltf",
+    activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+    activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
+    // activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
+    // activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
+    // activeColourMap: "/gltf/tshirt1fixed/textures/colourmap.svg",
   },
   mutations: {
     createScene(state) {
@@ -106,8 +127,37 @@ export default new Vuex.Store({
       state.controls.autoRotate = false;
       state.controls.autoRotateSpeed = 8;
     },
+    reset(store) {
+      store.isLoading = false;
+      store.isInitiated = false;
+      store.isInitiating = false;
+      // if(this.activeModel) this.activeModel.dispose();
+      while (store.scene && store.scene.children.length > 0) {
+        store.scene.remove(store.scene.children[0]);
+      }
+      if (store.animationFrameRequestId) {
+        window.cancelAnimationFrame(store.animationFrameRequestId);
+      }
+      if (store.renderer) {
+        store.renderer.renderLists.dispose();
+        store.renderer.dispose();
+      }
+      if (store.controls) store.controls.dispose();
+      store.activeModel = null;
+      store.renderer = null;
+      store.controls = null;
+      store.camera = null;
+      store.scene = null;
+    },
   },
   actions: {
+    selectModel({ state }, model) {
+      state.activeModelPath = model.activeModelPath;
+      state.activeModelTexture = model.activeModelTexture;
+      state.activeColourMap = model.activeColourMap;
+      this.commit('reset');
+      this.dispatch('init');
+    },
     init({ state }) {
       if (state.isInitiated || state.isInitiating) return false;
       state.isLoading = true;
@@ -125,7 +175,7 @@ export default new Vuex.Store({
 
       this.commit('createCameraControls');
 
-      this.dispatch("loadDefaultModel");
+      this.dispatch("loadModel");
 
       window.animate();
 
@@ -133,7 +183,7 @@ export default new Vuex.Store({
       state.isInitiating = false;
       state.isInitiated = true;
     },
-    loadDefaultModel({ state }) {
+    loadModel({ state }) {
       var vm = this;
 
       if (!state.activeModelPath) return false;
