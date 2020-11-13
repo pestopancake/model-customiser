@@ -1,0 +1,47 @@
+<template>
+  <div class="dev">
+    <input type="checkbox" value="1" class="cb" checked>
+    <div class="contents">
+      <button @click.prevent="$store.commit('clearScene')">clear scene</button>
+      <button @click.prevent="$store.dispatch('loadModel')">load model</button>
+      <button @click.prevent="$store.dispatch('selectModel')">select model</button>
+      <ul>
+        <li>isInitiating: {{$store.state.isInitiating}}</li>
+        <li>isInitiated: {{$store.state.isInitiated}}</li>
+        <li>isLoading: {{$store.state.isLoading}}</li>
+        <li>isLoadingSoft: {{$store.state.isLoadingSoft}}</li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Dev",
+  data() {
+    return {};
+  },
+  methods: {},
+};
+</script>
+<style scoped lang="scss">
+.dev {
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  .contents{
+    padding: 10px;
+    transform-origin: left top;
+    transition: 0.1s ease-in-out;
+    transform: scale(0.6);
+    display:none;
+    flex-direction: column;
+  }
+  input:checked + .contents {
+    display: flex;
+    transform: scale(1);
+  }
+}
+</style>

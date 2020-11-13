@@ -7,9 +7,24 @@
     </div>
     <img alt="Vue logo" src="./assets/logo.png" v-show="$store.state.isLoading">
     <router-view/>
+    <dev v-if="env === 'development'"></dev>
   </div>
 </template>
+<script>
+import Dev from '@/components/Dev.vue'
 
+export default {
+  name: "App",
+  data(){
+    return {
+      env: process.env.NODE_ENV
+    }
+  },
+  components: {
+    Dev,
+  },
+};
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

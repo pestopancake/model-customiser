@@ -60,7 +60,7 @@ Tidy up:
 <script>
 
 export default {
-  name: "Home",
+  name: "ModelEditor",
   data() {
     return {
       text: "hello world",
@@ -72,18 +72,10 @@ export default {
       // activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
       // activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
       // activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
-      activeModel: null,
-      controls: null,
-      renderer: null,
-      camera: null,
-      scene: null,
-      animationFrameRequestId: null,
     };
   },
-  mounted() {
-    // this.reset();
-    // this.init();
-    // this.loadModel();
+  mounted: function(){
+    this.$store.dispatch("loadModel");
   },
   methods: {
   },

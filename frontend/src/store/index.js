@@ -135,9 +135,9 @@ export default new Vuex.Store({
       while (store.scene && store.scene.children.length > 0) {
         store.scene.remove(store.scene.children[0]);
       }
-      if (store.animationFrameRequestId) {
-        window.cancelAnimationFrame(store.animationFrameRequestId);
-      }
+      // if (store.animationFrameRequestId) {
+      //   window.cancelAnimationFrame(store.animationFrameRequestId);
+      // }
       if (store.renderer) {
         store.renderer.renderLists.dispose();
         store.renderer.dispose();
@@ -149,6 +149,12 @@ export default new Vuex.Store({
       store.camera = null;
       store.scene = null;
     },
+    clearScene(store) {
+      console.log(store.scene.children);
+      // while (store.scene && store.scene.children.length > 0) {
+      //   store.scene.remove(store.scene.children[0]);
+      // }
+    }
   },
   actions: {
     selectModel({ state }, model) {
@@ -175,7 +181,7 @@ export default new Vuex.Store({
 
       this.commit('createCameraControls');
 
-      this.dispatch("loadModel");
+      // this.dispatch("loadModel");
 
       window.animate();
 
@@ -338,28 +344,6 @@ export default new Vuex.Store({
           }
         }
       });
-    },
-    reset({ state }) {
-      state.isLoading = false;
-      state.isInitiated = false;
-      state.isInitiating = false;
-      // if(this.activeModel) this.activeModel.dispose();
-      while (state.scene && state.scene.children.length > 0) {
-        state.scene.remove(state.scene.children[0]);
-      }
-      if (state.animationFrameRequestId) {
-        window.cancelAnimationFrame(state.animationFrameRequestId);
-      }
-      if (state.renderer) {
-        state.renderer.renderLists.dispose();
-        state.renderer.dispose();
-      }
-      if (state.controls) state.controls.dispose();
-      state.activeModel = null;
-      state.renderer = null;
-      state.controls = null;
-      state.camera = null;
-      state.scene = null;
     },
   },
   modules: {
