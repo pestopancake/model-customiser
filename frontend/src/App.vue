@@ -8,6 +8,7 @@
     <img alt="Vue logo" src="./assets/logo.png" v-show="$store.state.isLoading">
     <router-view/>
     <dev v-if="env === 'development'"></dev>
+    <canvas id="texturecanvas"></canvas>
   </div>
 </template>
 <script>
@@ -54,5 +55,9 @@ export default {
   display: block;
   position: fixed;
   z-index: -1;
+}
+
+#texturecanvas{
+  display:none;
 }
 </style>

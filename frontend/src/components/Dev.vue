@@ -5,12 +5,16 @@
       <button @click.prevent="$store.commit('clearScene')">clear scene</button>
       <button @click.prevent="$store.dispatch('loadModel')">load model</button>
       <button @click.prevent="$store.dispatch('selectModel')">select model</button>
+      <button @click.prevent="textureSnapshot">texture snapshot</button>
       <ul>
         <li>isInitiating: {{$store.state.isInitiating}}</li>
         <li>isInitiated: {{$store.state.isInitiated}}</li>
         <li>isLoading: {{$store.state.isLoading}}</li>
         <li>isLoadingSoft: {{$store.state.isLoadingSoft}}</li>
       </ul>
+    </div>
+    <div>
+      <img src="" id="canvaspreview" />
     </div>
   </div>
 </template>
@@ -21,7 +25,16 @@ export default {
   data() {
     return {};
   },
-  methods: {},
+  methods: {
+    textureSnapshot(){
+      var canvas = document.getElementById("texturecanvas");
+      var dataURL = canvas.toDataURL();
+      var a = document.getElementById("canvaspreview");
+      if (a) {
+        document.getElementById("canvaspreview").src = dataURL;
+      }
+    }
+  },
 };
 </script>
 <style scoped lang="scss">
@@ -42,6 +55,9 @@ export default {
   input:checked + .contents {
     display: flex;
     transform: scale(1);
+  }
+  #canvaspreview{
+    width: 500px;
   }
 }
 </style>

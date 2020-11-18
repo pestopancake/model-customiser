@@ -28,10 +28,19 @@ export default new Vuex.Store({
     camera: null,
     controls: null,
     activeModel: null,
+    activeMaterial: null,
     // config
     models: [
       {
         id: 1,
+        displayName: 'Test Low Poly',
+        activeModelPath: "/gltf/low/LowPolyShirt.gltf",
+        activeModelTexture: "/gltf/low/lowpoly.png",
+        activeColourMap: "/gltf/low/lowdesign.svg",
+        // activeColourMap: "/gltf/low/UV_Map_SVG_Export.svg",
+      },
+      {
+        id: 2,
         displayName: 'Jersey',
         activeModelPath: "/gltf/jersey1/scene.gltf",
         activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
@@ -47,9 +56,12 @@ export default new Vuex.Store({
     ],
     text: "hello world",
     selectedColour: "#ff9900",
-    activeModelPath: "/gltf/jersey1/scene.gltf",
-    activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
-    activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
+    // activeModelPath: "/gltf/jersey1/scene.gltf",
+    // activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+    // activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
+    activeModelPath: "/gltf/low/LowPolyShirt.gltf",
+    activeModelTexture: "/gltf/low/lowpoly.png",
+    activeColourMap: "/gltf/low/lowdesign.svg",
     // activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
     // activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
     // activeColourMap: "/gltf/tshirt1fixed/textures/colourmap.svg",
@@ -236,31 +248,12 @@ export default new Vuex.Store({
         }
       );
     },
-    setMaterial({ state }) {
+    async setMaterial({ state }) {
       state.isLoadingSoft = true;
       var vm = this;
-      let color = {
-        canvas: true,
-        color: "ff9900",
-        shininess: 50,
-      };
 
-      var new_mtl;
-
-      var canvas = document.createElement("canvas");
-      canvas.id = "texturecanvas";
-      canvas.style.position = "fixed";
-      canvas.style.top = "0";
-      canvas.style.right = "0";
+      var canvas = document.getElementById("texturecanvas");
       var context = canvas.getContext("2d");
-      var texture = new THREE.Texture(canvas);
-      var texture2;
-      // texture.rotation = -0.8;
-      // texture.repeat.set(1,1,1);
-      // texture.wrapS = THREE.RepeatWrapping;
-      // texture.wrapT = THREE.RepeatWrapping;
-      texture.flipY = 0;
-      texture.flipX = 0;
 
       var imageObj = new Image();
       imageObj.src = state.activeModelTexture;
@@ -268,6 +261,7 @@ export default new Vuex.Store({
         canvas.width = imageObj.width;
         canvas.height = imageObj.height;
 
+        //draw the original texture onto the canvas
         context.drawImage(
           imageObj,
           0,
@@ -283,52 +277,39 @@ export default new Vuex.Store({
         //flip the context to draw assets bellow upside down
 
         // context.restore();
-        texture.needsUpdate = true;
 
         fetch(state.activeColourMap)
           .then((response) => response.text())
           .then(function (svgStr) {
-            // var svgobj = SVG(svgStr);
-            // console.log(svgobj);
+            // todo: svg - replace colours by class not regex
             svgStr = svgStr.replace(/#ff9900/gi, state.selectedColour);
-
             var imgObj3 = new Image();
             // imgObj3.src = 'models/grape_ride_20_ssjersey_ss_jersey_line/textures/colourmap.svg';
             imgObj3.src =
               "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
-            texture2 = new THREE.Texture(
-              "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr)
-            );
-            texture2.needsUpdate = true;
             imgObj3.onload = function () {
               context.drawImage(imgObj3, 0, 0);
 
-              context.translate(0, canvas.height); //location on the canvas to draw your sprite, this is important.
-              context.scale(1, -1); //This does your mirroring/flipping
+              // flip Y
+              // context.translate(0, canvas.height); //location on the canvas to draw your sprite, this is important.
+              // context.scale(1, -1); //This does your mirroring/flipping
+              // flip X
+              context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
+              context.scale(-1, 1); //This does your mirroring/flipping
 
               var imgObj2 = new Image();
-              imgObj2.src = "img/pattern_.jpg";
+              imgObj2.src = "img/logo.svg";
               imgObj2.onload = function () {
-                context.drawImage(imgObj2, 1200, 650, 200, 200);
+                context.drawImage(imgObj2, 850, 100, 200, 200);
 
                 //test writing text
-                context.font = "24px Arial";
-                context.fillStyle = "red";
-                context.fillText(state.text, 1200, 600);
-                texture.needsUpdate = true;
-
-                new_mtl = new THREE.MeshPhongMaterial({
-                  map: texture,
-                  shininess: color.shininess ? color.shininess : 10,
-                });
+                context.font = "42px Arial";
+                context.fillStyle = "black";
+                context.fillText(state.text, 850, 450);
 
                 state.isLoadingSoft = false;
-                vm.dispatch('replaceMaterial', new_mtl);
+                vm.dispatch('refreshDesign');
               };
-
-              // dev: to see canvas
-              // var dataURL = canvas.toDataURL();
-              // document.getElementById("canvaspreview").src = dataURL;
             };
           });
       };
@@ -336,14 +317,36 @@ export default new Vuex.Store({
       // var body = document.getElementsByTagName("body")[0];
       // body.appendChild(canvas);
     },
-    replaceMaterial({ state }, newMaterial) {
-      state.activeModel.traverse((o) => {
-        if (o.isMesh && o.name != null) {
-          if (o.name == "mainmesh") {
-            o.material = newMaterial;
+    refreshDesign({ state }) {
+      var canvas = document.getElementById("texturecanvas");
+      var texture = new THREE.Texture(canvas);
+      // texture.rotation = -0.8;
+      // texture.repeat.set(1,1,1);
+      // texture.wrapS = THREE.RepeatWrapping;
+      // texture.wrapT = THREE.RepeatWrapping;
+      texture.flipY = 0;
+      texture.flipX = 0;
+      texture.needsUpdate = true;
+
+      if (!state.activeMaterial) {
+        var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
+        state.activeMaterial = new THREE.MeshPhongMaterial({
+          map: texture,
+          normalMap: normalTexture,
+          shininess: 10,
+          side: THREE.DoubleSide
+        });
+        state.activeModel.traverse((o) => {
+          if (o.isMesh && o.name != null) {
+            if (o.name == "mainmesh") {
+              o.material = state.activeMaterial;
+            }
           }
-        }
-      });
+        });
+      } else {
+        state.activeMaterial.map = texture
+      }
+      
     },
   },
   modules: {
