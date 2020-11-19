@@ -39,13 +39,13 @@ export default new Vuex.Store({
         activeColourMap: "/gltf/low/lowdesign.svg",
         // activeColourMap: "/gltf/low/UV_Map_SVG_Export.svg",
       },
-      {
-        id: 2,
-        displayName: 'Jersey',
-        activeModelPath: "/gltf/jersey1/scene.gltf",
-        activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
-        activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
-      },
+      // {
+      //   id: 2,
+      //   displayName: 'Jersey',
+      //   activeModelPath: "/gltf/jersey1/scene.gltf",
+      //   activeModelTexture: "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+      //   activeColourMap: "/gltf/jersey1/textures/colourmap.svg",
+      // },
       // {
       //   id: 2,
       //   displayName: 'T-Shirt',
