@@ -338,6 +338,9 @@ export default new Vuex.Store({
         state.activeMaterial = new THREE.MeshPhongMaterial({
           map: texture,
           // normalMap: normalTexture,
+          //normalMapType: THREE.TangentSpaceNormalMap,
+          // roughness: 0.4,
+          // metalness: 0.2,
           shininess: 100,
           side: THREE.DoubleSide
         });
@@ -345,11 +348,13 @@ export default new Vuex.Store({
           if (o.isMesh && o.name != null) {
             if (o.name == "mainmesh") {
               o.material = state.activeMaterial;
+              o.material.needsUpdate = true
             }
           }
         });
       } else {
         state.activeMaterial.map = texture
+        state.activeMaterial.needsUpdate = true
       }
       
     },
