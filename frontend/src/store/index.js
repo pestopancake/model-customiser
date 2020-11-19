@@ -29,6 +29,7 @@ export default new Vuex.Store({
     controls: null,
     activeModel: null,
     activeMaterial: null,
+    activeTexture: null,
     // config
     models: [
       {
@@ -323,24 +324,27 @@ export default new Vuex.Store({
     },
     refreshDesign({ state }) {
       var canvas = document.getElementById("texturecanvas");
-      var texture = new THREE.Texture(canvas);
+      if (!state.activeTexture) {
+        state.activeTexture = new THREE.CanvasTexture(canvas);
+      }
       // texture.rotation = -0.8;
       // texture.repeat.set(1,1,1);
       // texture.wrapS = THREE.RepeatWrapping;
       // texture.wrapT = THREE.RepeatWrapping;
-      texture.flipY = 0;
+      state.activeTexture.flipY = 0;
       // texture.wrapS = THREE.RepeatWrapping;
       // texture.repeat.x = -1;
-      texture.needsUpdate = true;
+      state.activeTexture.needsUpdate = true;
 
       if (!state.activeMaterial) {
         var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
         state.activeMaterial = new THREE.MeshPhongMaterial({
-          map: texture,
+          map: state.activeTexture,
           normalMap: normalTexture,
           //normalMapType: THREE.TangentSpaceNormalMap,
           // roughness: 0.4,
           // metalness: 0.2,
+          normalScale: new THREE.Vector2(0.1,0.1),
           shininess: 100,
           side: THREE.DoubleSide
         });
@@ -348,15 +352,14 @@ export default new Vuex.Store({
           if (o.isMesh && o.name != null) {
             if (o.name == "mainmesh") {
               o.material = state.activeMaterial;
-              o.material.needsUpdate = true
+              // o.material.needsUpdate = true
             }
           }
         });
       } else {
-        state.activeMaterial.map = texture
-        state.activeMaterial.needsUpdate = true
+        // state.activeMaterial.map = state.activeTexture
+        // state.activeMaterial.needsUpdate = true
       }
-      
     },
   },
   modules: {
