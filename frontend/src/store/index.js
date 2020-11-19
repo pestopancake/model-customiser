@@ -334,10 +334,10 @@ export default new Vuex.Store({
       texture.needsUpdate = true;
 
       if (!state.activeMaterial) {
-        // var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
+        var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
         state.activeMaterial = new THREE.MeshPhongMaterial({
           map: texture,
-          // normalMap: normalTexture,
+          normalMap: normalTexture,
           //normalMapType: THREE.TangentSpaceNormalMap,
           // roughness: 0.4,
           // metalness: 0.2,
