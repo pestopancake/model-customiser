@@ -17,7 +17,7 @@ window.animate = function () {
   }
 };
 
-window.resizeRendererToDisplaySize = function(renderer) {
+window.resizeRendererToDisplaySize = function (renderer) {
   const canvas = renderer.domElement;
   var width = window.innerWidth;
   var height = window.innerHeight;
@@ -25,18 +25,25 @@ window.resizeRendererToDisplaySize = function(renderer) {
   var canvasPixelHeight = canvas.height / window.devicePixelRatio;
 
   const needResize =
-      canvasPixelWidth !== width || canvasPixelHeight !== height;
+    canvasPixelWidth !== width || canvasPixelHeight !== height;
   if (needResize) {
-      renderer.setSize(width, height, false);
+    renderer.setSize(width, height, false);
   }
   return needResize;
+}
+
+window.onload2promise = function (obj) {
+  return new Promise((resolve, reject) => {
+    obj.onload = () => resolve(obj);
+    obj.onerror = reject;
+  });
 }
 
 new Vue({
   router,
   store,
   render: h => h(App),
-  mounted: function(){
+  mounted: function () {
     this.$store.dispatch("init");
   }
 }).$mount('#app')

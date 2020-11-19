@@ -255,67 +255,71 @@ export default new Vuex.Store({
       var canvas = document.getElementById("texturecanvas");
       var context = canvas.getContext("2d");
 
+      // var activeModelTextureResponse = await fetch(state.activeModelTexture);
+      // var activeModelImg = await activeModelTextureResponse.text();
+
       var imageObj = new Image();
+      let imgpromise = window.onload2promise(imageObj);
       imageObj.src = state.activeModelTexture;
-      imageObj.onload = function () {
-        canvas.width = imageObj.width;
-        canvas.height = imageObj.height;
+      await imgpromise;
+      
+      canvas.width = imageObj.width;
+      canvas.height = imageObj.height;
 
-        //draw the original texture onto the canvas
-        context.drawImage(
-          imageObj,
-          0,
-          0,
-          imageObj.width,
-          imageObj.height,
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+      // context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
+      // context.scale(-1, 1); //This does your mirroring/flipping
 
-        //flip the context to draw assets bellow upside down
+      //draw the original texture onto the canvas
+      context.drawImage(
+        imageObj,
+        0,
+        0,
+        imageObj.width,
+        imageObj.height,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
-        // context.restore();
+      // context.restore();
 
-        fetch(state.activeColourMap)
-          .then((response) => response.text())
-          .then(function (svgStr) {
-            // todo: svg - replace colours by class not regex
-            svgStr = svgStr.replace(/#ff9900/gi, state.selectedColour);
-            var imgObj3 = new Image();
-            // imgObj3.src = 'models/grape_ride_20_ssjersey_ss_jersey_line/textures/colourmap.svg';
-            imgObj3.src =
-              "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
-            imgObj3.onload = function () {
-              context.drawImage(imgObj3, 0, 0);
+      var activeColourMapImgResponse = await fetch(state.activeColourMap);
+      var svgStr = await activeColourMapImgResponse.text();
+      
+      // todo: svg - replace colours by class not regex
+      svgStr = svgStr.replace(/#ff9900/gi, state.selectedColour);
+      var imgObj3 = new Image();
+      // imgObj3.src = 'models/grape_ride_20_ssjersey_ss_jersey_line/textures/colourmap.svg';
+      
+      imgpromise = window.onload2promise(imgObj3);
+      imgObj3.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+      await imgpromise;
+      
+      context.drawImage(imgObj3, 0, 0);
 
-              // flip Y
-              // context.translate(0, canvas.height); //location on the canvas to draw your sprite, this is important.
-              // context.scale(1, -1); //This does your mirroring/flipping
-              // flip X
-              context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
-              context.scale(-1, 1); //This does your mirroring/flipping
+      // flip Y
+      // context.translate(0, canvas.height); //location on the canvas to draw your sprite, this is important.
+      // context.scale(1, -1); //This does your mirroring/flipping
+      // flip X
+      context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
+      context.scale(-1, 1); //This does your mirroring/flipping
 
-              var imgObj2 = new Image();
-              imgObj2.src = "img/logo.svg";
-              imgObj2.onload = function () {
-                context.drawImage(imgObj2, 850, 100, 200, 200);
+      var imgObj2 = new Image();
+      imgpromise = window.onload2promise(imgObj2);
+      imgObj2.src = "img/logo.svg";
+      await imgpromise;
+      
+      context.drawImage(imgObj2, 850, 100, 200, 200);
 
-                //test writing text
-                context.font = "42px Arial";
-                context.fillStyle = "black";
-                context.fillText(state.text, 850, 450);
+      //test writing text
+      context.font = "42px Arial";
+      context.fillStyle = "black";
+      context.fillText(state.text, 850, 350);
 
-                state.isLoadingSoft = false;
-                vm.dispatch('refreshDesign');
-              };
-            };
-          });
-      };
-
-      // var body = document.getElementsByTagName("body")[0];
-      // body.appendChild(canvas);
+      state.isLoadingSoft = false;
+      vm.dispatch('refreshDesign');
+    
     },
     refreshDesign({ state }) {
       var canvas = document.getElementById("texturecanvas");
@@ -325,15 +329,16 @@ export default new Vuex.Store({
       // texture.wrapS = THREE.RepeatWrapping;
       // texture.wrapT = THREE.RepeatWrapping;
       texture.flipY = 0;
-      texture.flipX = 0;
+      // texture.wrapS = THREE.RepeatWrapping;
+      // texture.repeat.x = -1;
       texture.needsUpdate = true;
 
       if (!state.activeMaterial) {
-        var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
+        // var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
         state.activeMaterial = new THREE.MeshPhongMaterial({
           map: texture,
-          normalMap: normalTexture,
-          shininess: 10,
+          // normalMap: normalTexture,
+          shininess: 100,
           side: THREE.DoubleSide
         });
         state.activeModel.traverse((o) => {
