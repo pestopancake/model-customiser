@@ -345,7 +345,7 @@ export default new Vuex.Store({
           // roughness: 0.4,
           // metalness: 0.2,
           normalScale: new THREE.Vector2(0.1,0.1),
-          shininess: 100,
+          shininess: 50,
           side: THREE.DoubleSide
         });
         state.activeModel.traverse((o) => {
