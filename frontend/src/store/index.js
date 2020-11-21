@@ -186,75 +186,66 @@ export default new Vuex.Store({
       state.isInitiated = true;
     },
     selectModel({ state }, model) {
+      state.isLoading = true;
       this.commit('clearScene');
       state.activeProduct = model;
-      state.activeModelPath = model.activeModelPath;
-      state.activeModelTexture = model.activeModelTexture;
-      state.activeColourMap = model.activeColourMap;
       this.dispatch("loadModel");
     },
-    loadModel({ state }) {
+    async loadModel({ state }) {
       var vm = this;
 
-      if (!state.activeModelPath) return false;
+      if (!state.activeProduct || !state.activeProduct.modelPath) return false;
 
       state.isLoading = true;
 
       var loader = new GLTFLoader();
+      var gltf = await loader.loadAsync(state.activeProduct.modelPath, undefined);
 
-      loader.load(
-        state.activeModelPath,
-        function (gltf) {
-          state.activeModel = gltf.scene;
+      state.activeModel = gltf.scene;
 
-          // state.activeModel.traverse((o) => {
-          //   if (o.isMesh) {
-          //     o.castShadow = true;
-          //     o.receiveShadow = true;
-          //     // o.geometry.center();
-          //   }
-          // });
+      // state.activeModel.traverse((o) => {
+      //   if (o.isMesh) {
+      //     o.castShadow = true;
+      //     o.receiveShadow = true;
+      //     // o.geometry.center();
+      //   }
+      // });
 
-          // scale model to fit
-          var bbox = new THREE.Box3().setFromObject(state.activeModel);
-          var scale = 1 / (bbox.max.x - bbox.min.x);
-          state.activeModel.scale.set(scale, scale, scale);
+      // scale model to fit
+      var bbox = new THREE.Box3().setFromObject(state.activeModel);
+      var scale = 1 / (bbox.max.x - bbox.min.x);
+      state.activeModel.scale.set(scale, scale, scale);
 
-          // rotate model
-          // theModel.rotation.y = Math.PI; // to rotate 180
+      // rotate model
+      // theModel.rotation.y = Math.PI; // to rotate 180
 
-          // Offset the position
-          // state.activeModel.position.y = 0;
-          // vm.activeModel.position.z = -1;
+      // Offset the position
+      // state.activeModel.position.y = 0;
+      // vm.activeModel.position.z = -1;
 
-          // Add the model to the scene
-          state.scene.add(state.activeModel);
+      // Add the model to the scene
+      state.scene.add(state.activeModel);
 
-          state.isLoading = false;
+      state.isLoading = false;
 
-          vm.dispatch('setMaterial');
-        },
-        undefined,
-        function (error) {
-          console.error(error);
-        }
-      );
+      vm.dispatch('setMaterial');
     },
     async setMaterial({ state }) {
+      if (state.isLoading) throw "already loading";
       state.isLoadingSoft = true;
       var vm = this;
 
       var canvas = document.getElementById("texturecanvas");
       var context = canvas.getContext("2d");
 
-      // var activeModelTextureResponse = await fetch(state.activeModelTexture);
+      // var activeModelTextureResponse = await fetch(state.activeProduct.modelTexturePath);
       // var activeModelImg = await activeModelTextureResponse.text();
 
       var imageObj = new Image();
       let imgpromise = window.onload2promise(imageObj);
-      imageObj.src = state.activeModelTexture;
+      imageObj.src = state.activeProduct.modelTexturePath;
       await imgpromise;
-      
+
       canvas.width = imageObj.width;
       canvas.height = imageObj.height;
 
@@ -276,38 +267,40 @@ export default new Vuex.Store({
 
       // context.restore();
 
-      var activeColourMapImgResponse = await fetch(state.activeColourMap);
+      var activeColourMapImgResponse = await fetch(state.activeProduct.colourMapPath);
       var svgStr = await activeColourMapImgResponse.text();
-      
+
       // todo: svg - replace colours by class not regex
       svgStr = svgStr.replace(/#ff9900/gi, state.selectedColour);
       var imgObj3 = new Image();
       // imgObj3.src = 'models/grape_ride_20_ssjersey_ss_jersey_line/textures/colourmap.svg';
-      
+
       imgpromise = window.onload2promise(imgObj3);
       imgObj3.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
       await imgpromise;
-      
+
       context.drawImage(imgObj3, 0, 0);
 
       // flip Y
       // context.translate(0, canvas.height); //location on the canvas to draw your sprite, this is important.
       // context.scale(1, -1); //This does your mirroring/flipping
       // flip X
-      context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
-      context.scale(-1, 1); //This does your mirroring/flipping
+      // context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
+      // context.scale(-1, 1); //This does your mirroring/flipping
 
       var imgObj2 = new Image();
       imgpromise = window.onload2promise(imgObj2);
       imgObj2.src = "img/logo.svg";
       await imgpromise;
-      
+
       context.drawImage(imgObj2, 850, 100, 200, 200);
 
-      //test writing text
       context.font = "42px Arial";
-      context.fillStyle = "black";
-      context.fillText(state.text, 850, 350);
+      if(state.activeProduct.textElements){
+        for (let textElement of state.activeProduct.textElements) {
+          context.fillText(textElement.value, textElement.position.x, textElement.position.y);
+        }
+      }
 
       state.isLoadingSoft = false;
       vm.dispatch('refreshDesign');
@@ -332,7 +325,7 @@ export default new Vuex.Store({
           //normalMapType: THREE.TangentSpaceNormalMap,
           // roughness: 0.4,
           // metalness: 0.2,
-          normalScale: new THREE.Vector2(0.05,0.05),
+          normalScale: new THREE.Vector2(0.05, 0.05),
           shininess: 50,
           side: THREE.DoubleSide
         });

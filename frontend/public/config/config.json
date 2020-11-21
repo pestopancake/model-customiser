@@ -3,13 +3,13 @@
         {
             "id": 1,
             "displayName": "Test Low Poly",
-            "activeModelPath": "/gltf/low/LowPolyShirt.gltf",
-            "activeModelTexture": "/gltf/low/lowpoly.png",
-            "activeColourMap": "/gltf/low/lowdesign.svg",
+            "modelPath": "/gltf/low/LowPolyShirt.gltf",
+            "modelTexturePath": "/gltf/low/lowpoly.png",
+            "colourMapPath": "/gltf/low/lowdesign.svg",
             "textElements": [
                 {
                     "name": "Front text",
-                    "value": "test1",
+                    "value": "test front",
                     "position": {
                         "x": 850,
                         "y": 350
@@ -17,10 +17,23 @@
                 },
                 {
                     "name": "Back text",
-                    "value": "test2",
+                    "value": "test back",
                     "position": {
                         "x": 850,
-                        "y": 450
+                        "y": 1450
+                    }
+                }
+            ],
+            "imageElements": [
+
+                {
+                    "name": "Front image",
+                    "value": "",
+                    "maxWidth": "300",
+                    "maxHeight": "300",
+                    "position": {
+                        "x": 850,
+                        "y": 100
                     }
                 }
             ]
@@ -28,16 +41,34 @@
         {
             "id": 2,
             "displayName": "Test Low Poly 2",
-            "activeModelPath": "/gltf/low/LowPolyShirt.gltf",
-            "activeModelTexture": "/gltf/low/lowpoly.png",
-            "activeColourMap": "/gltf/low/lowdesign.svg"
+            "modelPath": "/gltf/low2/lowpoly.gltf",
+            "modelTexturePath": "/gltf/low2/UV_Tested.png",
+            "colourMapPath": "/gltf/low2/lowpoly.svg",
+            "textElements": [
+                {
+                    "name": "Front text",
+                    "value": "test1",
+                    "position": {
+                        "x": 1650,
+                        "y": 1200
+                    }
+                },
+                {
+                    "name": "Back text",
+                    "value": "test1",
+                    "position": {
+                        "x": 550,
+                        "y": 1200
+                    }
+                }
+            ]
         },
         {
           "id": 3,
           "displayName": "Jersey",
-          "activeModelPath": "/gltf/jersey1/scene.gltf",
-          "activeModelTexture": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
-          "activeColourMap": "/gltf/jersey1/textures/colourmap.svg"
+          "modelPath": "/gltf/jersey1/scene.gltf",
+          "modelTexturePath": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+          "colourMapPath": "/gltf/jersey1/textures/colourmap.svg"
         }
     ]
 }

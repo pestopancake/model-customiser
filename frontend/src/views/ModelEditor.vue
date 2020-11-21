@@ -20,32 +20,40 @@ Tidy up:
   <div id="wrapper">
     <div id="ui">
       <div class="text-input-wrapper" v-if="$store.state.activeProduct">
-        <input
+        <!-- <input
           type="text"
           class="text-input"
           v-model="$store.state.text"
           @change="$store.dispatch('setMaterial')"
-        />
-        <div v-for="textElement in $store.state.activeProduct.textElements"
-          :key="textElement.name"
-          class="">
-          <input
-            type="text"
-            class="text-input"
-            v-model="textElement.value"
-            @change="$store.dispatch('setMaterial')"
-          />
-        </div>
+        /> -->
+        <b-container fluid="md">
+          <b-row v-for="textElement in $store.state.activeProduct.textElements"
+            :key="textElement.name"
+            class="my-1 justify-content-md-center">
+            <b-col col md="2" class="text-right pr-0">
+              <label for="input-small">{{textElement.name}}:</label>
+            </b-col>
+            <b-col col md="auto">
+              <b-form-input
+                type="text"
+                size="sm"
+                maxlength="20"
+                v-model="textElement.value"
+                @change="$store.dispatch('setMaterial')"
+              />
+            </b-col>
+          </b-row>
+        </b-container>
       </div>
       <div id="models">
         <template v-for="model in $store.state.config.products">
-          <div
-            class="model"
+          <b-button
+            class="btn mx-1"
             :key="model.id"
             v-on:click="$store.dispatch('selectModel', model)"
           >
             {{ model.displayName }}
-          </div>
+          </b-button>
         </template>
       </div>
       <div id="colour-swatches">
@@ -70,10 +78,12 @@ Tidy up:
           ></div>
         </template>
       </div>
+      <b-overlay :show="$store.state.isLoading" no-wrap></b-overlay>
     </div>
   </div>
 </template>
 <script>
+
 export default {
   name: "ModelEditor",
   data() {
@@ -82,6 +92,7 @@ export default {
   },
   async mounted() {
     // this.$store.dispatch("loadModel");
+    // this.$store.dispatch('selectModel', this.$store.state.config.products[0])
   },
   methods: {},
 };
@@ -112,15 +123,6 @@ export default {
     width: 50px;
     height: 50px;
     margin-left: 1vw;
-  }
-}
-.text-input-wrapper {
-  display: flex;
-  justify-content: center;
-  .text-input {
-    padding: 10px;
-    margin: 10px;
-    width: 50vw;
   }
 }
 #models {

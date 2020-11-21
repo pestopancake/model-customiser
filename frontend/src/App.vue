@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+     <b-spinner small label="Small Spinner" class="global-loading-spinner"
+      v-show="$store.state.isLoading || $store.state.isLoadingSoft"></b-spinner>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> | 
@@ -33,6 +35,12 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+
+  .global-loading-spinner{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+  }
 }
 
 #nav {

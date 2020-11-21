@@ -2,10 +2,12 @@
   <div class="dev">
     <input type="checkbox" value="1" class="cb" checked>
     <div class="contents">
-      <button @click.prevent="$store.commit('clearScene')">clear scene</button>
-      <button @click.prevent="$store.dispatch('loadModel')">load model</button>
-      <button @click.prevent="$store.dispatch('selectModel')">select model</button>
-      <button @click.prevent="textureSnapshot">texture snapshot</button>
+    <b-button-group vertical>
+      <b-button variant="outline-primary" @click.prevent="$store.commit('clearScene')">clear scene</b-button>
+      <b-button variant="outline-primary" @click.prevent="$store.dispatch('loadModel')">load model</b-button>
+      <b-button variant="outline-primary" @click.prevent="$store.dispatch('selectModel')">select model</b-button>
+      <b-button variant="outline-primary" @click.prevent="textureSnapshot">texture snapshot</b-button>
+    </b-button-group>
       <ul>
         <li>isInitiating: {{$store.state.isInitiating}}</li>
         <li>isInitiated: {{$store.state.isInitiated}}</li>
