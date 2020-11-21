@@ -1,0 +1,43 @@
+{
+    "products": [
+        {
+            "id": 1,
+            "displayName": "Test Low Poly",
+            "activeModelPath": "/gltf/low/LowPolyShirt.gltf",
+            "activeModelTexture": "/gltf/low/lowpoly.png",
+            "activeColourMap": "/gltf/low/lowdesign.svg",
+            "textElements": [
+                {
+                    "name": "Front text",
+                    "value": "test1",
+                    "position": {
+                        "x": 850,
+                        "y": 350
+                    }
+                },
+                {
+                    "name": "Back text",
+                    "value": "test2",
+                    "position": {
+                        "x": 850,
+                        "y": 450
+                    }
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "displayName": "Test Low Poly 2",
+            "activeModelPath": "/gltf/low/LowPolyShirt.gltf",
+            "activeModelTexture": "/gltf/low/lowpoly.png",
+            "activeColourMap": "/gltf/low/lowdesign.svg"
+        },
+        {
+          "id": 3,
+          "displayName": "Jersey",
+          "activeModelPath": "/gltf/jersey1/scene.gltf",
+          "activeModelTexture": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+          "activeColourMap": "/gltf/jersey1/textures/colourmap.svg"
+        }
+    ]
+}

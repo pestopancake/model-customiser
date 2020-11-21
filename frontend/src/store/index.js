@@ -1,6 +1,5 @@
 /**
  * todo:
- * don't reset everything to change model, just remove existing model
  */
 
 import Vue from 'vue'
@@ -14,23 +13,26 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // waiting
+    // loading states
     isInitiating: false,
     isInitiated: false,
     isLoading: false,
     isLoadingSoft: false,
-    // scene config
-    backgroundColour: 0xf1f1f1,
-    // scene state
+    // generic scene state
     scene: null,
     renderer: null,
     animationFrameRequestId: null,
     camera: null,
     controls: null,
+    // generic scene config
+    backgroundColour: 0xf1f1f1,
+    // scene state
     activeModel: null,
     activeMaterial: null,
     activeTexture: null,
+    activeProduct: null,
     // config
+    config: {},
     models: [
       {
         id: 1,
@@ -71,7 +73,7 @@ export default new Vuex.Store({
     createScene(state) {
       state.scene = new THREE.Scene();
       state.scene.background = new THREE.Color(state.backgroundColour);
-      state.scene.fog = new THREE.Fog(state.backgroundColour, 6, 20);
+      state.scene.fog = new THREE.Fog(state.backgroundColour, 1, 20);
     },
     createRenderer(state) {
       const canvas = document.querySelector("#c");
@@ -113,7 +115,7 @@ export default new Vuex.Store({
       // Add directional Light to scene
       state.scene.add(dirLight2);
     },
-    createFloor(state) { 
+    createFloor(state) {
       var floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1, 1);
       var floorMaterial = new THREE.MeshPhongMaterial({
         color: 0xdddddd,
@@ -125,7 +127,7 @@ export default new Vuex.Store({
       floor.position.y = -1;
       state.scene.add(floor);
     },
-    createCameraControls(state) { 
+    createCameraControls(state) {
       state.controls = new OrbitControls(state.camera, state.renderer.domElement);
       // state.controls.maxPolarAngle = Math.PI / 2;
       // state.controls.minPolarAngle = Math.PI / 2;
@@ -140,45 +142,26 @@ export default new Vuex.Store({
       state.controls.autoRotate = false;
       state.controls.autoRotateSpeed = 8;
     },
-    reset(store) {
-      store.isLoading = false;
-      store.isInitiated = false;
-      store.isInitiating = false;
-      // if(this.activeModel) this.activeModel.dispose();
-      while (store.scene && store.scene.children.length > 0) {
-        store.scene.remove(store.scene.children[0]);
-      }
-      // if (store.animationFrameRequestId) {
-      //   window.cancelAnimationFrame(store.animationFrameRequestId);
-      // }
-      if (store.renderer) {
-        store.renderer.renderLists.dispose();
-        store.renderer.dispose();
-      }
-      if (store.controls) store.controls.dispose();
-      store.activeModel = null;
-      store.renderer = null;
-      store.controls = null;
-      store.camera = null;
-      store.scene = null;
-    },
     clearScene(store) {
-      console.log(store.scene.children);
-      // while (store.scene && store.scene.children.length > 0) {
-      //   store.scene.remove(store.scene.children[0]);
-      // }
+      if (store.activeModel) {
+        store.scene.remove(store.activeModel);
+      }
+      if (store.activeMaterial) {
+        store.activeMaterial.dispose();
+      }
+      store.activeModel = null;
+      store.activeMaterial = null;
     }
   },
   actions: {
-    selectModel({ state }, model) {
-      state.activeModelPath = model.activeModelPath;
-      state.activeModelTexture = model.activeModelTexture;
-      state.activeColourMap = model.activeColourMap;
-      this.commit('reset');
-      this.dispatch('init');
-    },
-    init({ state }) {
-      if (state.isInitiated || state.isInitiating) return false;
+    async init({ state }) {
+      if (state.isInitiated || state.isInitiating) {
+        throw 'state already instantiated or in-progress';
+      }
+
+      var config = await (await fetch("/config/config.json")).json();
+      state.config = config;
+
       state.isLoading = true;
       state.isInitiating = true;
 
@@ -201,6 +184,14 @@ export default new Vuex.Store({
       state.isLoading = false;
       state.isInitiating = false;
       state.isInitiated = true;
+    },
+    selectModel({ state }, model) {
+      this.commit('clearScene');
+      state.activeProduct = model;
+      state.activeModelPath = model.activeModelPath;
+      state.activeModelTexture = model.activeModelTexture;
+      state.activeColourMap = model.activeColourMap;
+      this.dispatch("loadModel");
     },
     loadModel({ state }) {
       var vm = this;
@@ -320,20 +311,17 @@ export default new Vuex.Store({
 
       state.isLoadingSoft = false;
       vm.dispatch('refreshDesign');
-    
     },
     refreshDesign({ state }) {
-      var canvas = document.getElementById("texturecanvas");
       if (!state.activeTexture) {
+        var canvas = document.getElementById("texturecanvas");
         state.activeTexture = new THREE.CanvasTexture(canvas);
+        state.activeTexture.flipY = 0;
+        // texture.repeat.set(1,1,1);
+        // texture.repeat.x = -1;
+        // texture.wrapS = THREE.RepeatWrapping;
+        // texture.wrapT = THREE.RepeatWrapping;
       }
-      // texture.rotation = -0.8;
-      // texture.repeat.set(1,1,1);
-      // texture.wrapS = THREE.RepeatWrapping;
-      // texture.wrapT = THREE.RepeatWrapping;
-      state.activeTexture.flipY = 0;
-      // texture.wrapS = THREE.RepeatWrapping;
-      // texture.repeat.x = -1;
       state.activeTexture.needsUpdate = true;
 
       if (!state.activeMaterial) {
@@ -344,7 +332,7 @@ export default new Vuex.Store({
           //normalMapType: THREE.TangentSpaceNormalMap,
           // roughness: 0.4,
           // metalness: 0.2,
-          normalScale: new THREE.Vector2(0.1,0.1),
+          normalScale: new THREE.Vector2(0.05,0.05),
           shininess: 50,
           side: THREE.DoubleSide
         });
@@ -352,13 +340,9 @@ export default new Vuex.Store({
           if (o.isMesh && o.name != null) {
             if (o.name == "mainmesh") {
               o.material = state.activeMaterial;
-              // o.material.needsUpdate = true
             }
           }
         });
-      } else {
-        // state.activeMaterial.map = state.activeTexture
-        // state.activeMaterial.needsUpdate = true
       }
     },
   },

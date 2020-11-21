@@ -9,7 +9,7 @@ window.animate = function () {
   var vm = store.state;
   vm.controls.update();
   vm.renderer.render(vm.scene, vm.camera);
-  vm.animationFrameRequestId = requestAnimationFrame(window.animate);
+  window.animationFrameRequestId = requestAnimationFrame(window.animate);
   if (window.resizeRendererToDisplaySize(vm.renderer)) {
     const canvas = vm.renderer.domElement;
     vm.camera.aspect = canvas.clientWidth / canvas.clientHeight;
