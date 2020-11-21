@@ -27,7 +27,8 @@ Tidy up:
           @change="$store.dispatch('setMaterial')"
         />
         <div v-for="textElement in $store.state.activeProduct.textElements"
-          :key="textElement.name">
+          :key="textElement.name"
+          class="">
           <input
             type="text"
             class="text-input"
