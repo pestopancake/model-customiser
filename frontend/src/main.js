@@ -8,6 +8,8 @@ import store from './store'
 
 Vue.config.productionTip = false
 
+//todo:organise these helper functions
+
 window.animate = function () {
   var vm = store.state;
   vm.controls.update();
@@ -40,6 +42,20 @@ window.onload2promise = function (obj) {
     obj.onload = () => resolve(obj);
     obj.onerror = reject;
   });
+}
+
+window.readFileAsync = function (file) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  })
 }
 
 new Vue({

@@ -20,12 +20,6 @@ Tidy up:
   <div id="wrapper">
     <div id="ui">
       <div class="text-input-wrapper" v-if="$store.state.activeProduct">
-        <!-- <input
-          type="text"
-          class="text-input"
-          v-model="$store.state.text"
-          @change="$store.dispatch('setMaterial')"
-        /> -->
         <b-container fluid="md">
           <b-row v-for="textElement in $store.state.activeProduct.textElements"
             :key="textElement.name"
@@ -45,7 +39,28 @@ Tidy up:
           </b-row>
         </b-container>
       </div>
-      <div id="models">
+      <div class="image-input-wrapper" v-if="$store.state.activeProduct">
+        
+        <b-container fluid="md">
+          <b-row v-for="imageElement in $store.state.activeProduct.imageElements"
+            :key="imageElement.name"
+            class="my-1 justify-content-md-center">
+            <b-col col md="2" class="text-right pr-0">
+              <label for="input-small">{{imageElement.name}}:</label>
+            </b-col>
+            <b-col col md="auto">
+              <b-form-file
+                v-model="imageElement.value"
+                @change="$store.dispatch('setMaterial')"
+                placeholder="Choose an image or drop it here..."
+                drop-placeholder="Drop image here..."
+              ></b-form-file>
+            </b-col>
+          </b-row>
+        </b-container>
+        
+      </div>
+      <div id="models" class="my-2">
         <template v-for="model in $store.state.config.products">
           <b-button
             class="btn mx-1"
@@ -108,6 +123,9 @@ export default {
 }
 #ui {
   // border-top: 5px solid #d0d0d0;
+  background-color: rgba(200, 200, 200, 0.7);
+  font-weight: bold;
+  padding-top: 10px;
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -119,20 +137,14 @@ export default {
   display: flex;
   justify-content: center;
   .colour-swatch {
+    // border-width: 3px 3px 0 3px;
+    // border-style: solid;
+    // border-color: rgba(200, 200, 200, 0.8);
+    box-shadow: 0px 0px 5px 1px rgba(200, 200, 200, 0.8);
     cursor: pointer;
     width: 50px;
     height: 50px;
     margin-left: 1vw;
-  }
-}
-#models {
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  .model {
-    cursor: pointer;
-    padding: 10px 20px;
-    background-color: rgba(200, 200, 200, 0.5);
   }
 }
 </style>

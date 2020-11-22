@@ -9,6 +9,8 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+const pica = require('pica')();
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -231,11 +233,13 @@ export default new Vuex.Store({
       vm.dispatch('setMaterial');
     },
     async setMaterial({ state }) {
+      if (!state.activeProduct) throw "no product selected";
       if (state.isLoading) throw "already loading";
       state.isLoadingSoft = true;
       var vm = this;
 
       var canvas = document.getElementById("texturecanvas");
+      var resizeCanvas = document.getElementById("resizecanvas");
       var context = canvas.getContext("2d");
 
       // var activeModelTextureResponse = await fetch(state.activeProduct.modelTexturePath);
@@ -288,13 +292,41 @@ export default new Vuex.Store({
       // context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
       // context.scale(-1, 1); //This does your mirroring/flipping
 
+      //test image
       var imgObj2 = new Image();
       imgpromise = window.onload2promise(imgObj2);
       imgObj2.src = "img/logo.svg";
       await imgpromise;
-
       context.drawImage(imgObj2, 850, 100, 200, 200);
 
+      if(state.activeProduct.imageElements){
+        for (let imageElement of state.activeProduct.imageElements) {
+          if (!imageElement.value) continue;
+          // reader.onload = e => console.log(e.target.result);
+          let imgData =  await window.readFileAsync(imageElement.value);
+          let img = new Image();
+          imgpromise = window.onload2promise(img);
+          img.src = imgData;
+          await imgpromise;
+
+          let width = imageElement.maxWidth;
+          resizeCanvas.width = width;
+          resizeCanvas.height = img.height * width / img.width;
+          await pica.resize(img, resizeCanvas, {
+            unsharpAmount: 80,
+            unsharpRadius: 0.6,
+            unsharpThreshold: 2
+          });
+
+          var imgResized = new Image();
+          imgpromise = window.onload2promise(imgResized);
+          imgResized.src = resizeCanvas.toDataURL();
+          await imgpromise;
+          context.drawImage(imgResized, imageElement.position.x, imageElement.position.y);
+        }
+      }
+
+      // text elements
       context.font = "42px Arial";
       if(state.activeProduct.textElements){
         for (let textElement of state.activeProduct.textElements) {

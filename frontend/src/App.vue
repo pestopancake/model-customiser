@@ -11,6 +11,7 @@
     <router-view/>
     <dev v-if="env === 'development'"></dev>
     <canvas id="texturecanvas"></canvas>
+    <canvas id="resizecanvas"></canvas>
   </div>
 </template>
 <script>
@@ -66,6 +67,10 @@ export default {
 }
 
 #texturecanvas{
+  display:none;
+}
+
+#resizecanvas{
   display:none;
 }
 </style>

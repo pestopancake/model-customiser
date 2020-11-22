@@ -2,45 +2,7 @@
     "products": [
         {
             "id": 1,
-            "displayName": "Test Low Poly",
-            "modelPath": "/gltf/low/LowPolyShirt.gltf",
-            "modelTexturePath": "/gltf/low/lowpoly.png",
-            "colourMapPath": "/gltf/low/lowdesign.svg",
-            "textElements": [
-                {
-                    "name": "Front text",
-                    "value": "test front",
-                    "position": {
-                        "x": 850,
-                        "y": 350
-                    }
-                },
-                {
-                    "name": "Back text",
-                    "value": "test back",
-                    "position": {
-                        "x": 850,
-                        "y": 1450
-                    }
-                }
-            ],
-            "imageElements": [
-
-                {
-                    "name": "Front image",
-                    "value": "",
-                    "maxWidth": "300",
-                    "maxHeight": "300",
-                    "position": {
-                        "x": 850,
-                        "y": 100
-                    }
-                }
-            ]
-        },
-        {
-            "id": 2,
-            "displayName": "Test Low Poly 2",
+            "displayName": "Low Poly",
             "modelPath": "/gltf/low2/lowpoly.gltf",
             "modelTexturePath": "/gltf/low2/UV_Tested.png",
             "colourMapPath": "/gltf/low2/lowpoly.svg",
@@ -59,6 +21,43 @@
                     "position": {
                         "x": 550,
                         "y": 1200
+                    }
+                }
+            ],
+            "imageElements": [
+
+                {
+                    "name": "Front image",
+                    "value": null,
+                    "maxWidth": "200",
+                    "position": {
+                        "x": 1500,
+                        "y": 1050
+                    }
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "displayName": "Low Poly Old",
+            "modelPath": "/gltf/low/LowPolyShirt.gltf",
+            "modelTexturePath": "/gltf/low/lowpoly.png",
+            "colourMapPath": "/gltf/low/lowdesign.svg",
+            "textElements": [
+                {
+                    "name": "Front text",
+                    "value": "test front",
+                    "position": {
+                        "x": 850,
+                        "y": 350
+                    }
+                },
+                {
+                    "name": "Back text",
+                    "value": "test back",
+                    "position": {
+                        "x": 850,
+                        "y": 1450
                     }
                 }
             ]
