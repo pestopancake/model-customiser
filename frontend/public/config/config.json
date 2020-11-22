@@ -20,12 +20,11 @@
                     "value": "test1",
                     "position": {
                         "x": 550,
-                        "y": 1200
+                        "y": 1000
                     }
                 }
             ],
             "imageElements": [
-
                 {
                     "name": "Front image",
                     "value": null,
@@ -33,6 +32,15 @@
                     "position": {
                         "x": 1500,
                         "y": 1050
+                    }
+                },
+                {
+                    "name": "Back image",
+                    "value": null,
+                    "maxWidth": "200",
+                    "position": {
+                        "x": 450,
+                        "y": 1100
                     }
                 }
             ]

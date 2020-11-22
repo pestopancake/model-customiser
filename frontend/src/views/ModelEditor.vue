@@ -23,11 +23,11 @@ Tidy up:
         <b-container fluid="md">
           <b-row v-for="textElement in $store.state.activeProduct.textElements"
             :key="textElement.name"
-            class="my-1 justify-content-md-center">
-            <b-col col md="2" class="text-right pr-0">
+            class="my-1 justify-content-md-left">
+            <b-col cols="3" md="2" class="text-right pr-0">
               <label for="input-small">{{textElement.name}}:</label>
             </b-col>
-            <b-col col md="auto">
+            <b-col col>
               <b-form-input
                 type="text"
                 size="sm"
@@ -44,17 +44,23 @@ Tidy up:
         <b-container fluid="md">
           <b-row v-for="imageElement in $store.state.activeProduct.imageElements"
             :key="imageElement.name"
-            class="my-1 justify-content-md-center">
-            <b-col col md="2" class="text-right pr-0">
+            class="my-1 justify-content-md-left">
+            <b-col cols="3" md="2" class="text-right pr-0">
               <label for="input-small">{{imageElement.name}}:</label>
             </b-col>
-            <b-col col md="auto">
+            <b-col col>
+              <b-input-group>
               <b-form-file
                 v-model="imageElement.value"
                 @change="$store.dispatch('setMaterial')"
+                accept="image/*"
                 placeholder="Choose an image or drop it here..."
                 drop-placeholder="Drop image here..."
               ></b-form-file>
+              <b-button v-show="imageElement.value" @click="imageElement.value = null; $store.dispatch('setMaterial')">
+                <b-icon icon="x"></b-icon>
+              </b-button>
+              </b-input-group>
             </b-col>
           </b-row>
         </b-container>
@@ -129,9 +135,6 @@ export default {
   position: fixed;
   bottom: 0;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
 }
 #colour-swatches {
   display: flex;

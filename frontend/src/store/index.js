@@ -293,11 +293,11 @@ export default new Vuex.Store({
       // context.scale(-1, 1); //This does your mirroring/flipping
 
       //test image
-      var imgObj2 = new Image();
-      imgpromise = window.onload2promise(imgObj2);
-      imgObj2.src = "img/logo.svg";
-      await imgpromise;
-      context.drawImage(imgObj2, 850, 100, 200, 200);
+      // var imgObj2 = new Image();
+      // imgpromise = window.onload2promise(imgObj2);
+      // imgObj2.src = "img/logo.svg";
+      // await imgpromise;
+      // context.drawImage(imgObj2, 850, 100, 200, 200);
 
       if(state.activeProduct.imageElements){
         for (let imageElement of state.activeProduct.imageElements) {
@@ -315,6 +315,7 @@ export default new Vuex.Store({
           await pica.resize(img, resizeCanvas, {
             unsharpAmount: 80,
             unsharpRadius: 0.6,
+            alpha: true,
             unsharpThreshold: 2
           });
 
