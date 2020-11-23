@@ -21,11 +21,13 @@ Tidy up:
     <div id="ui">
       <div class="text-input-wrapper" v-if="$store.state.activeProduct">
         <b-container fluid="md">
-          <b-row v-for="textElement in $store.state.activeProduct.textElements"
+          <b-row
+            v-for="textElement in $store.state.activeProduct.textElements"
             :key="textElement.name"
-            class="my-1 justify-content-md-left">
+            class="my-1 justify-content-md-left"
+          >
             <b-col cols="3" md="2" class="text-right pr-0">
-              <label for="input-small">{{textElement.name}}:</label>
+              <label for="input-small">{{ textElement.name }}:</label>
             </b-col>
             <b-col col>
               <b-form-input
@@ -40,41 +42,54 @@ Tidy up:
         </b-container>
       </div>
       <div class="image-input-wrapper" v-if="$store.state.activeProduct">
-        
         <b-container fluid="md">
-          <b-row v-for="imageElement in $store.state.activeProduct.imageElements"
+          <b-row
+            v-for="imageElement in $store.state.activeProduct.imageElements"
             :key="imageElement.name"
-            class="my-1 justify-content-md-left">
+            class="my-1 justify-content-md-left"
+          >
             <b-col cols="3" md="2" class="text-right pr-0">
-              <label for="input-small">{{imageElement.name}}:</label>
+              <label for="input-small">{{ imageElement.name }}:</label>
             </b-col>
             <b-col col>
               <b-input-group>
-              <b-form-file
-                v-model="imageElement.value"
-                @change="$store.dispatch('setMaterial')"
-                accept="image/*"
-                placeholder="Choose an image or drop it here..."
-                drop-placeholder="Drop image here..."
-              ></b-form-file>
-              <b-button v-show="imageElement.value" @click="imageElement.value = null; $store.dispatch('setMaterial')">
-                <b-icon icon="x"></b-icon>
-              </b-button>
+                <b-form-file
+                  v-model="imageElement.value"
+                  @change="$store.dispatch('setMaterial')"
+                  accept="image/*"
+                  placeholder="Choose an image or drop it here..."
+                  drop-placeholder="Drop image here..."
+                ></b-form-file>
+                <b-button
+                  v-show="imageElement.value"
+                  @click="
+                    imageElement.value = null;
+                    $store.dispatch('setMaterial');
+                  "
+                >
+                  <b-icon icon="x"></b-icon>
+                </b-button>
               </b-input-group>
             </b-col>
           </b-row>
         </b-container>
-        
       </div>
       <div id="models" class="my-2">
-        <template v-for="model in $store.state.config.products">
-          <b-button
+        <template v-for="product in $store.state.config.products">
+          <b-link
+            class="btn"
+            :to="{ name: 'Product Editor', params: { id: product.id } }"
+            :key="product.id"
+          >
+            {{ product.displayName }}
+          </b-link>
+          <!-- <b-button
             class="btn mx-1"
             :key="model.id"
             v-on:click="$store.dispatch('selectModel', model)"
           >
             {{ model.displayName }}
-          </b-button>
+          </b-button> -->
         </template>
       </div>
       <div id="colour-swatches">
@@ -104,18 +119,37 @@ Tidy up:
   </div>
 </template>
 <script>
+import router from "@/router";
 
 export default {
   name: "ModelEditor",
   data() {
-    return {
-    };
+    return {};
   },
   async mounted() {
     // this.$store.dispatch("loadModel");
-    // this.$store.dispatch('selectModel', this.$store.state.config.products[0])
+    this.selectModel();
   },
-  methods: {},
+  methods: {
+    selectModel() {
+      if (router.currentRoute.params.id) {
+        this.$store.dispatch(
+          "selectModel",
+          parseInt(router.currentRoute.params.id)
+        );
+      } else {
+        this.$store.dispatch(
+          "selectModel",
+          this.$store.state.config.products[0]
+        );
+      }
+    },
+  },
+  watch: {
+    $route() {
+      this.selectModel();
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

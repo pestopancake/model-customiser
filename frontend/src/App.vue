@@ -3,9 +3,8 @@
      <b-spinner small label="Small Spinner" class="global-loading-spinner"
       v-show="$store.state.isLoading || $store.state.isLoadingSoft"></b-spinner>
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> | 
-      <router-link to="/model">Model</router-link>
+      <router-link to="/">Select your jersey</router-link> |
+      <router-link to="/about">About</router-link>
     </div>
     <img alt="Vue logo" src="./assets/logo.png" v-show="$store.state.isLoading">
     <router-view/>

@@ -5,13 +5,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+Vue.use(Vuex)
+
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const pica = require('pica')();
 
-Vue.use(Vuex)
+import config from './../../public/config/config.json';
+
 
 export default new Vuex.Store({
   state: {
@@ -34,7 +37,7 @@ export default new Vuex.Store({
     activeTexture: null,
     activeProduct: null,
     // config
-    config: {},
+    config: config,
     models: [
       {
         id: 1,
@@ -73,6 +76,7 @@ export default new Vuex.Store({
   },
   mutations: {
     createScene(state) {
+
       state.scene = new THREE.Scene();
       state.scene.background = new THREE.Color(state.backgroundColour);
       state.scene.fog = new THREE.Fog(state.backgroundColour, 1, 20);
@@ -161,8 +165,8 @@ export default new Vuex.Store({
         throw 'state already instantiated or in-progress';
       }
 
-      var config = await (await fetch("/config/config.json")).json();
-      state.config = config;
+      // var config = await (await fetch("/config/config.json")).json();
+      // state.config = config;
 
       state.isLoading = true;
       state.isInitiating = true;
@@ -187,7 +191,15 @@ export default new Vuex.Store({
       state.isInitiating = false;
       state.isInitiated = true;
     },
-    selectModel({ state }, model) {
+    selectModel({ state }, model, force) {
+      if (Number.isInteger(model)) {
+        model = state.config.products.find(product => product.id === model);
+      }
+      if (!model) throw 'product not found';
+      if (state.activeProduct && state.activeProduct.id === model.id && !force) { 
+        console.log('product already selected');
+        return false;
+      }
       state.isLoading = true;
       this.commit('clearScene');
       state.activeProduct = model;
@@ -313,7 +325,9 @@ export default new Vuex.Store({
           resizeCanvas.width = width;
           resizeCanvas.height = img.height * width / img.width;
           await pica.resize(img, resizeCanvas, {
-            unsharpAmount: 80,
+            quality: 0,
+            features: ['js', 'wasm', 'cib', 'ww'],
+            unsharpAmount: 50,
             unsharpRadius: 0.6,
             alpha: true,
             unsharpThreshold: 2
