@@ -35,7 +35,7 @@ Tidy up:
                 size="sm"
                 maxlength="20"
                 v-model="textElement.value"
-                @change="$store.dispatch('setMaterial')"
+                v-on:keyup="textChanged()"
               />
             </b-col>
           </b-row>
@@ -55,7 +55,7 @@ Tidy up:
               <b-input-group>
                 <b-form-file
                   v-model="imageElement.value"
-                  @change="$store.dispatch('setMaterial')"
+                  @change="materialChanged()"
                   accept="image/*"
                   placeholder="Choose an image or drop it here..."
                   drop-placeholder="Drop image here..."
@@ -64,7 +64,7 @@ Tidy up:
                   v-show="imageElement.value"
                   @click="
                     imageElement.value = null;
-                    $store.dispatch('setMaterial');
+                    materialChanged();
                   "
                 >
                   <b-icon icon="x"></b-icon>
@@ -74,7 +74,7 @@ Tidy up:
           </b-row>
         </b-container>
       </div>
-      <div id="models" class="my-2">
+      <!-- <div id="models" class="my-2">
         <template v-for="product in $store.state.config.products">
           <b-link
             class="btn"
@@ -83,13 +83,17 @@ Tidy up:
           >
             {{ product.displayName }}
           </b-link>
-          <!-- <b-button
+        </template>
+      </div> -->
+      <div id="designs" v-if="$store.state.activeProduct">
+        <template v-for="design in $store.state.activeProduct.designs">
+          <b-button
             class="btn mx-1"
-            :key="model.id"
-            v-on:click="$store.dispatch('selectModel', model)"
+            @click.prevent="selectDesign(design)"
+            :key="design.path"
           >
-            {{ model.displayName }}
-          </b-button> -->
+            {{ design.name }}
+          </b-button>
         </template>
       </div>
       <div id="colour-swatches">
@@ -107,9 +111,11 @@ Tidy up:
             class="colour-swatch"
             :style="{ 'background-color': colour }"
             :key="colour"
-            v-on:mouseover="
+            v-on:mouseover="hoverColour(colour)"
+            v-on:mouseout="hoverColour(null)"
+            @click="
               $store.state.selectedColour = colour;
-              $store.dispatch('setMaterial');
+              materialChanged();
             "
           ></div>
         </template>
@@ -120,17 +126,23 @@ Tidy up:
 </template>
 <script>
 import router from "@/router";
+import _throttle from "lodash/throttle";
 
 export default {
   name: "ModelEditor",
   data() {
-    return {};
+    return {
+      colourPromiseLock: false
+    };
   },
   async mounted() {
     // this.$store.dispatch("loadModel");
     this.selectModel();
   },
   methods: {
+    textChanged:  _throttle(function() {
+      this.materialChanged();
+    }, 500),
     selectModel() {
       if (router.currentRoute.params.id) {
         this.$store.dispatch(
@@ -142,6 +154,32 @@ export default {
           "selectModel",
           this.$store.state.config.products[0]
         );
+      }
+    },
+    selectDesign(design) {
+      this.$store.state.activeProduct.selectedDesign = design;
+      this.materialChanged();
+    },
+    materialChanged() {
+      this.$store.dispatch("setMaterial");
+    },
+    async hoverColour(colour) {
+      var vm = this;
+      this.$store.state.hoverColour = colour;
+      if(vm.$store.state.isLoadingSoft && !vm.colourPromiseLock){
+        vm.colourPromiseLock = true;
+        await new Promise(function (resolve) {
+          (function waitForFoo() {
+            if (!vm.$store.state.isLoadingSoft){
+              vm.colourPromiseLock = false;
+              return resolve();
+            }
+            setTimeout(waitForFoo, 20);
+          })();
+        });
+      }
+      if(!vm.$store.state.isLoadingSoft){
+        this.materialChanged();
       }
     },
   },
@@ -171,6 +209,7 @@ export default {
   width: 100%;
 }
 #colour-swatches {
+  margin-top: 20px;
   display: flex;
   justify-content: center;
   .colour-swatch {

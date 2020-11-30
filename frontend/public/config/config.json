@@ -1,11 +1,60 @@
 {
+    "colourPalettes": [
+        {
+            "name": "default",
+            "colours": [
+                "#ff9900",
+                "#ff0099",
+                "#00ff99",
+                "#0099ff",
+                "#9900ff",
+                "#99ff00"
+            ]
+        },
+        {
+            "name": "secondary",
+            "colours": [
+                "#ff9900",
+                "#ff0099",
+                "#00ff99",
+                "#0099ff",
+                "#9900ff",
+                "#99ff00"
+            ]
+        }
+    ],
     "products": [
         {
             "id": 1,
             "displayName": "Low Poly",
             "modelPath": "/gltf/low2/lowpoly.gltf",
             "modelTexturePath": "/gltf/low2/UV_Tested.png",
-            "colourMapPath": "/gltf/low2/lowpoly.svg",
+            "designs": [
+                {
+                    "name": "design 1",
+                    "path": "/gltf/low2/lowpoly_design_1.svg"
+                },
+                {
+                    "name": "design 2",
+                    "path": "/gltf/low2/lowpoly_design_2.svg"
+                },
+                {
+                    "name": "design 3",
+                    "path": "/gltf/low2/lowpoly_design_3.svg"
+                }
+            ],
+            "colours": [
+                {
+                    "colour": "#ff9900",
+                    "displayName": "Primary colour",
+                    "colourPalette": "default"
+                },
+                {
+                    "colour": "#ff0099",
+                    "displayName": "Secondary colour",
+                    "colourPalette": "seconday"
+                }
+            ],
             "textElements": [
                 {
                     "name": "Front text",

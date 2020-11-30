@@ -15,6 +15,30 @@ const pica = require('pica')();
 
 import config from './../../public/config/config.json';
 
+var assets = {
+  cache: [],
+  imageCache: [],
+  async get(path) {
+    return this.cache[path] || this.fetch(path);
+  },
+  async fetch(path) {
+    var response = await fetch(path);
+    this.cache[path] = await response.text()
+    return this.cache[path];
+  },
+  async getImage(path) {
+    if (this.imageCache[path]) return this.imageCache[path];
+    this.imageCache[path] = new Image();
+    let imgpromise = window.onload2promise(this.imageCache[path]);
+    this.imageCache[path].src = path;
+    await imgpromise
+    return this.imageCache[path];
+  },
+};
+
+var sleep = function(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export default new Vuex.Store({
   state: {
@@ -73,6 +97,7 @@ export default new Vuex.Store({
     // activeModelPath: "/gltf/tshirt1fixed/scene.gltf",
     // activeModelTexture: "/gltf/tshirt1fixed/textures/default_baseColor.png",
     // activeColourMap: "/gltf/tshirt1fixed/textures/colourmap.svg",
+    hoverColour: null,
   },
   mutations: {
     createScene(state) {
@@ -249,6 +274,7 @@ export default new Vuex.Store({
       if (state.isLoading) throw "already loading";
       state.isLoadingSoft = true;
       var vm = this;
+      let imgpromise;
 
       var canvas = document.getElementById("texturecanvas");
       var resizeCanvas = document.getElementById("resizecanvas");
@@ -257,10 +283,12 @@ export default new Vuex.Store({
       // var activeModelTextureResponse = await fetch(state.activeProduct.modelTexturePath);
       // var activeModelImg = await activeModelTextureResponse.text();
 
-      var imageObj = new Image();
-      let imgpromise = window.onload2promise(imageObj);
-      imageObj.src = state.activeProduct.modelTexturePath;
-      await imgpromise;
+      var imageObj = await assets.getImage(state.activeProduct.modelTexturePath);
+
+      // var imageObj = new Image();
+      // let imgpromise = window.onload2promise(imageObj);
+      // imageObj.src = state.activeProduct.modelTexturePath;
+      // await imgpromise;
 
       canvas.width = imageObj.width;
       canvas.height = imageObj.height;
@@ -283,13 +311,12 @@ export default new Vuex.Store({
 
       // context.restore();
 
-      var activeColourMapImgResponse = await fetch(state.activeProduct.colourMapPath);
-      var svgStr = await activeColourMapImgResponse.text();
+      let designPath = state.activeProduct.selectedDesign ? state.activeProduct.selectedDesign.path : state.activeProduct.designs[0].path;
+      var svgStr = await assets.get(designPath);
 
       // todo: svg - replace colours by class not regex
-      svgStr = svgStr.replace(/#ff9900/gi, state.selectedColour);
+      svgStr = svgStr.replace(/#ff9900/gi, state.hoverColour || state.selectedColour);
       var imgObj3 = new Image();
-      // imgObj3.src = 'models/grape_ride_20_ssjersey_ss_jersey_line/textures/colourmap.svg';
 
       imgpromise = window.onload2promise(imgObj3);
       imgObj3.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
@@ -303,13 +330,6 @@ export default new Vuex.Store({
       // flip X
       // context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
       // context.scale(-1, 1); //This does your mirroring/flipping
-
-      //test image
-      // var imgObj2 = new Image();
-      // imgpromise = window.onload2promise(imgObj2);
-      // imgObj2.src = "img/logo.svg";
-      // await imgpromise;
-      // context.drawImage(imgObj2, 850, 100, 200, 200);
 
       if(state.activeProduct.imageElements){
         for (let imageElement of state.activeProduct.imageElements) {
@@ -325,12 +345,11 @@ export default new Vuex.Store({
           resizeCanvas.width = width;
           resizeCanvas.height = img.height * width / img.width;
           await pica.resize(img, resizeCanvas, {
-            quality: 0,
             features: ['js', 'wasm', 'cib', 'ww'],
-            unsharpAmount: 50,
+            unsharpAmount: 80,
             unsharpRadius: 0.6,
+            unsharpThreshold: 2,
             alpha: true,
-            unsharpThreshold: 2
           });
 
           var imgResized = new Image();
@@ -349,10 +368,9 @@ export default new Vuex.Store({
         }
       }
 
-      state.isLoadingSoft = false;
       vm.dispatch('refreshDesign');
     },
-    refreshDesign({ state }) {
+    async refreshDesign({ state }) {
       if (!state.activeTexture) {
         var canvas = document.getElementById("texturecanvas");
         state.activeTexture = new THREE.CanvasTexture(canvas);
@@ -384,6 +402,8 @@ export default new Vuex.Store({
           }
         });
       }
+      await sleep(100); // give it some time to render (throttles colour change on hover)
+      state.isLoadingSoft = false;
     },
   },
   modules: {
