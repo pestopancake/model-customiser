@@ -13,6 +13,7 @@
   "dependencies": {
     "bootstrap-vue": "^2.17.3",
     "core-js": "^3.7.0",
+    "mongodb": "^3.6.3",
     "pica": "^6.1.1",
     "three": "^0.121.1",
     "vue": "^2.6.11",

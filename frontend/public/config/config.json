@@ -58,15 +58,15 @@
             "textElements": [
                 {
                     "name": "Front text",
-                    "value": "test1",
+                    "value": "front text",
                     "position": {
-                        "x": 1650,
-                        "y": 1200
+                        "x": 1550,
+                        "y": 1300
                     }
                 },
                 {
                     "name": "Back text",
-                    "value": "test1",
+                    "value": "back text",
                     "position": {
                         "x": 550,
                         "y": 1000
@@ -99,7 +99,12 @@
             "displayName": "Low Poly Old",
             "modelPath": "/gltf/low/LowPolyShirt.gltf",
             "modelTexturePath": "/gltf/low/lowpoly.png",
-            "colourMapPath": "/gltf/low/lowdesign.svg",
+            "designs": [
+                {
+                    "name": "design 1",
+                    "path": "/gltf/low/lowdesign.svg"
+                }
+            ],
             "textElements": [
                 {
                     "name": "Front text",
@@ -124,7 +129,12 @@
           "displayName": "Jersey",
           "modelPath": "/gltf/jersey1/scene.gltf",
           "modelTexturePath": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
-          "colourMapPath": "/gltf/jersey1/textures/colourmap.svg"
+          "designs": [
+              {
+                  "name": "design 1",
+                  "path": "/gltf/jersey1/textures/colourmap.svg"
+              }
+          ]
         }
     ]
 }

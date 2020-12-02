@@ -1,14 +1,15 @@
-const mongodb = require("../lib/mongodb.js");
+const db = require("../lib/db.js");
 
 (async () => {
 
-  await mongodb.connect();
-  try {
-    var a = await mongodb.db().collection('quotes').find({}).toArray();
-  } finally {
-    await mongodb.close();
-  }
+
+  var a = await db.run(async function (mongodb) {
+    return await mongodb.collection('quotes').find({}).toArray();
+  });
   console.log(a);
+
+  var b = await db.allQuotes();
+  console.log(b);
   
 })();
 
