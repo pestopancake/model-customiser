@@ -1,4 +1,4 @@
-const mongodb = require("../lib/mongodb.js");
+const mongodb = require("../apisrc/lib/mongodb.js");
 
 (async () => {
 

@@ -1,7 +1,6 @@
-const mongodb = require("../lib/mongodb.js");
+const mongodb = require("./mongodb.js");
 
 module.exports = {
-    mongodb: mongodb,
     db: null,
     async allQuotes() {
         return await this.run(async function(mongodb) { 
