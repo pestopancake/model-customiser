@@ -1,6 +1,6 @@
-const db = require("../lib/db.js");
+const quoteRepository = require("../apisrc/repositories/quote.js");
 
 module.exports = async (req, res) => {
-  var results = await db.allQuotes();
+  var results = await quoteRepository.allQuotes();
   res.json(results)
 }

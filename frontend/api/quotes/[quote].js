@@ -1,8 +1,6 @@
-const db = require("../lib/db.js");
+const quoteRepository = require("../apisrc/repositories/quote.js");
 
 module.exports = async (req, res) => {
-  var results = await db.run(async function (mongodb) {
-    return await mongodb.collection('quotes').findOne({id: req.query.quote}).toArray();
-  });
+  var results = await quoteRepository.findById(req.query.quote);
   res.json(results)
 }
