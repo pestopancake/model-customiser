@@ -1,21 +1,3 @@
-/**
-feature todo:
-- model selection
- - tree menu & end at a model?
-- model options:
- - text
- - image
- - pattern
-  - colour scheme
-
-misc todo:
-- loading overlay
-
-Tidy up:
-- re-use / pre fetch / cache assets
-- vuex - state only - move out three js?
-- mixin / component anything?
-*/
 <template>
   <div id="wrapper">
     <div id="ui">
@@ -55,7 +37,7 @@ Tidy up:
               <b-input-group>
                 <b-form-file
                   v-model="imageElement.value"
-                  @change="materialChanged()"
+                  @change="designChanged()"
                   accept="image/*"
                   placeholder="Choose an image or drop it here..."
                   drop-placeholder="Drop image here..."
@@ -64,7 +46,7 @@ Tidy up:
                   v-show="imageElement.value"
                   @click="
                     imageElement.value = null;
-                    materialChanged();
+                    designChanged();
                   "
                 >
                   <b-icon icon="x"></b-icon>
@@ -115,62 +97,70 @@ Tidy up:
             v-on:mouseout="hoverColour(null)"
             @click="
               $store.state.selectedColour = colour;
-              materialChanged();
+              designChanged();
             "
           ></div>
         </template>
       </div>
+      <b-button class="btn mx-1 my-2" @click.prevent="submitQuote()">
+        Submit Quote
+      </b-button>
       <b-overlay :show="$store.state.isLoading" no-wrap></b-overlay>
+      <QuoteFormModal />
     </div>
   </div>
 </template>
 <script>
 import router from "@/router";
 import _throttle from "lodash/throttle";
+import QuoteFormModal from "@/components/QuoteFormModal";
 
 export default {
   name: "ModelEditor",
+  components: { QuoteFormModal },
   data() {
     return {
-      colourPromiseLock: false
+      colourPromiseLock: false,
     };
   },
   async mounted() {
-    // this.$store.dispatch("loadModel");
-    this.selectModel();
+    this.selectProduct();
   },
   methods: {
-    textChanged:  _throttle(function() {
-      this.materialChanged();
+    textChanged: _throttle(function () {
+      this.designChanged();
     }, 500),
-    selectModel() {
+    submitQuote() {
+      this.$bvModal.show("quote-form-modal");
+    },
+    selectProduct() {
       if (router.currentRoute.params.id) {
         this.$store.dispatch(
-          "selectModel",
+          "selectProduct",
           parseInt(router.currentRoute.params.id)
         );
       } else {
         this.$store.dispatch(
-          "selectModel",
+          "selectProduct",
           this.$store.state.config.products[0]
         );
       }
     },
     selectDesign(design) {
       this.$store.state.activeProduct.selectedDesign = design;
-      this.materialChanged();
+      this.designChanged();
     },
-    materialChanged() {
+    designChanged() {
       this.$store.dispatch("setMaterial");
     },
     async hoverColour(colour) {
       var vm = this;
       this.$store.state.hoverColour = colour;
-      if(vm.$store.state.isLoadingSoft && !vm.colourPromiseLock){
+      if (vm.$store.state.isLoadingSoft && !vm.colourPromiseLock) {
         vm.colourPromiseLock = true;
         await new Promise(function (resolve) {
           (function waitForFoo() {
-            if (!vm.$store.state.isLoadingSoft){
+            if (!vm.$store.state.isLoadingSoft) {
               vm.colourPromiseLock = false;
               return resolve();
             }
@@ -178,14 +168,14 @@ export default {
           })();
         });
       }
-      if(!vm.$store.state.isLoadingSoft){
-        this.materialChanged();
+      if (!vm.$store.state.isLoadingSoft) {
+        this.designChanged();
       }
     },
   },
   watch: {
     $route() {
-      this.selectModel();
+      this.selectProduct();
     },
   },
 };

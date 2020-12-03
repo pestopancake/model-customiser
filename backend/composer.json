@@ -1,0 +1,8 @@
+{
+    "name": "paulmartin/productcustomiserbackend",
+    "autoload": {
+        "psr-4": {
+            "productCustomiser\\": "src/"
+        }
+    }
+}

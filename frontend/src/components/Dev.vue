@@ -4,8 +4,6 @@
     <div class="contents">
     <b-button-group vertical>
       <b-button variant="outline-primary" @click.prevent="$store.commit('clearScene')">clear scene</b-button>
-      <b-button variant="outline-primary" @click.prevent="$store.dispatch('loadModel')">load model</b-button>
-      <b-button variant="outline-primary" @click.prevent="$store.dispatch('selectModel')">select model</b-button>
       <b-button variant="outline-primary" @click.prevent="textureSnapshot">texture snapshot</b-button>
     </b-button-group>
       <ul>
