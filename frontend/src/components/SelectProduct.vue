@@ -3,7 +3,7 @@
     <h3>Products</h3>
     <ul>
       <li v-for="product in $store.state.config.products" :key="product.id">
-        <b-link :to="{name: 'Product Editor', params: { id: product.id }}">
+        <b-link :to="{name: 'Product Editor', params: { productid: product.id }}">
           {{product.displayName}}
         </b-link>
       </li>

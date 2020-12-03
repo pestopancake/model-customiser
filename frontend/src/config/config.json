@@ -1,7 +1,6 @@
 {
-    "colourPalettes": [
-        {
-            "name": "default",
+    "colourPalettes": {
+        "default": {
             "colours": [
                 "#ff9900",
                 "#ff0099",
@@ -11,24 +10,21 @@
                 "#99ff00"
             ]
         },
-        {
-            "name": "secondary",
+        "secondary": {
             "colours": [
                 "#ff9900",
                 "#ff0099",
-                "#00ff99",
-                "#0099ff",
-                "#9900ff",
-                "#99ff00"
+                "#00ff99"
             ]
         }
-    ],
+    },
     "products": [
         {
             "id": 1,
             "displayName": "Low Poly",
             "modelPath": "/gltf/low2/lowpoly.gltf",
             "modelTexturePath": "/gltf/low2/UV_Tested.png",
+            "selectedColourPlacement": null,
             "designs": [
                 {
                     "name": "design 1",
@@ -45,14 +41,16 @@
             ],
             "colours": [
                 {
-                    "colour": "#ff9900",
+                    "colourMap": "#ff9900",
+                    "defaultColour": "#ff9900",
                     "displayName": "Primary colour",
                     "colourPalette": "default"
                 },
                 {
-                    "colour": "#ff0099",
+                    "colourMap": "#ff0099",
+                    "defaultColour": "#ff9900",
                     "displayName": "Secondary colour",
-                    "colourPalette": "seconday"
+                    "colourPalette": "secondary"
                 }
             ],
             "textElements": [
@@ -99,6 +97,7 @@
             "displayName": "Low Poly Old",
             "modelPath": "/gltf/low/LowPolyShirt.gltf",
             "modelTexturePath": "/gltf/low/lowpoly.png",
+            "selectedColourPlacement": null,
             "designs": [
                 {
                     "name": "design 1",
@@ -125,16 +124,17 @@
             ]
         },
         {
-          "id": 3,
-          "displayName": "Jersey",
-          "modelPath": "/gltf/jersey1/scene.gltf",
-          "modelTexturePath": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
-          "designs": [
-              {
-                  "name": "design 1",
-                  "path": "/gltf/jersey1/textures/colourmap.svg"
-              }
-          ]
+            "id": 3,
+            "displayName": "Jersey",
+            "modelPath": "/gltf/jersey1/scene.gltf",
+            "modelTexturePath": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
+            "selectedColourPlacement": null,
+            "designs": [
+                {
+                    "name": "design 1",
+                    "path": "/gltf/jersey1/textures/colourmap.svg"
+                }
+            ]
         }
     ]
 }

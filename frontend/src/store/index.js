@@ -1,9 +1,13 @@
 /**
  * todo:
+ * colour palettes & default colour
  * get config based on env (for multiple clients)
+ * store images with quote (upload and use url..)
  * loading overlay
  * save quote
  * load a saved quote
+ * reset camera on change product
+ * cors issue fetching from backend
  */
 
 import Vue from 'vue'
@@ -11,12 +15,9 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-import * as THREE from "three";
-
 import config from '@/config/config.json';
 import threeJsScene from '@/lib/threeJsScene';
 import activeProduct from '@/lib/activeProduct';
-import generic from '@/lib/generic';
 
 export default new Vuex.Store({
   state: {
@@ -27,12 +28,8 @@ export default new Vuex.Store({
     isLoadingSoft: false,
     // scene state
     activeProduct: null,
-    activeModel: null,
-    activeMaterial: null,
-    activeTexture: null,
     // config
     config: config,
-    selectedColour: "#ff9900",
     hoverColour: null,
   },
   mutations: {

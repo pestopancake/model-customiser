@@ -10,6 +10,9 @@ import assets from '@/lib/assets';
 import generic from '@/lib/generic';
 
 export default {
+  activeModel: null,
+  activeMaterial: null,
+  activeTexture: null,
   async loadModel() {
     if (!store.state.activeProduct || !store.state.activeProduct.modelPath) return false;
 
@@ -18,9 +21,9 @@ export default {
     var loader = new GLTFLoader();
     var gltf = await loader.loadAsync(store.state.activeProduct.modelPath, undefined);
 
-    store.state.activeModel = gltf.scene;
+    this.activeModel = gltf.scene;
 
-    // store.state.activeModel.traverse((o) => {
+    // this.activeModel.traverse((o) => {
     //   if (o.isMesh) {
     //     o.castShadow = true;
     //     o.receiveShadow = true;
@@ -29,19 +32,19 @@ export default {
     // });
 
     // scale model to fit
-    var bbox = new THREE.Box3().setFromObject(store.state.activeModel);
+    var bbox = new THREE.Box3().setFromObject(this.activeModel);
     var scale = 1 / (bbox.max.x - bbox.min.x);
-    store.state.activeModel.scale.set(scale, scale, scale);
+    this.activeModel.scale.set(scale, scale, scale);
 
     // rotate model
     // theModel.rotation.y = Math.PI; // to rotate 180
 
     // Offset the position
-    // store.state.activeModel.position.y = 0;
+    // this.activeModel.position.y = 0;
     // vm.activeModel.position.z = -1;
 
     // Add the model to the scene
-    threeJsScene.scene.add(store.state.activeModel);
+    threeJsScene.scene.add(this.activeModel);
 
     store.state.isLoading = false;
 
@@ -89,8 +92,19 @@ export default {
     let designPath = store.state.activeProduct.selectedDesign ? store.state.activeProduct.selectedDesign.path : store.state.activeProduct.designs[0].path;
     var svgStr = await assets.get(designPath);
 
-    // todo: svg - replace colours by class not regex
-    svgStr = svgStr.replace(/#ff9900/gi, store.state.hoverColour || store.state.selectedColour);
+    if(store.state.activeProduct.colours){
+      for (let colourPlacement of store.state.activeProduct.colours) {
+        let colour = colourPlacement.selectedColour || colourPlacement.defaultColour;
+        if (store.state.activeProduct.selectedColourPlacement &&
+          colourPlacement.displayName === store.state.activeProduct.selectedColourPlacement.displayName) {
+          if (store.state.hoverColour) {
+            colour = store.state.hoverColour
+          }
+        }
+        svgStr = svgStr.replace(new RegExp(colourPlacement.colourMap, "gi"), colour);
+      }
+    }
+
     var imgObj3 = new Image();
 
     imgpromise = generic.onload2promise(imgObj3);
@@ -106,11 +120,11 @@ export default {
     // context.translate(canvas.width, 0); //location on the canvas to draw your sprite, this is important.
     // context.scale(-1, 1); //This does your mirroring/flipping
 
-    if(store.state.activeProduct.imageElements){
+    if (store.state.activeProduct.imageElements) {
       for (let imageElement of store.state.activeProduct.imageElements) {
         if (!imageElement.value) continue;
         // reader.onload = e => console.log(e.target.result);
-        let imgData =  await generic.readFileAsync(imageElement.value);
+        let imgData = await generic.readFileAsync(imageElement.value);
         let img = new Image();
         imgpromise = generic.onload2promise(img);
         img.src = imgData;
@@ -137,7 +151,7 @@ export default {
 
     // text elements
     context.font = "42px Arial";
-    if(store.state.activeProduct.textElements){
+    if (store.state.activeProduct.textElements) {
       for (let textElement of store.state.activeProduct.textElements) {
         context.fillText(textElement.value, textElement.position.x, textElement.position.y);
       }
@@ -146,21 +160,21 @@ export default {
     await this.refreshDesign();
   },
   async refreshDesign() {
-    if (!store.state.activeTexture) {
+    if (!this.activeTexture) {
       var canvas = document.getElementById("texturecanvas");
-      store.state.activeTexture = new THREE.CanvasTexture(canvas);
-      store.state.activeTexture.flipY = 0;
+      this.activeTexture = new THREE.CanvasTexture(canvas);
+      this.activeTexture.flipY = 0;
       // texture.repeat.set(1,1,1);
       // texture.repeat.x = -1;
       // texture.wrapS = THREE.RepeatWrapping;
       // texture.wrapT = THREE.RepeatWrapping;
     }
-    store.state.activeTexture.needsUpdate = true;
+    this.activeTexture.needsUpdate = true;
 
-    if (!store.state.activeMaterial) {
+    if (!this.activeMaterial) {
       var normalTexture = new THREE.TextureLoader().load('/gltf/low/normal map.jpg');
-      store.state.activeMaterial = new THREE.MeshPhongMaterial({
-        map: store.state.activeTexture,
+      this.activeMaterial = new THREE.MeshPhongMaterial({
+        map: this.activeTexture,
         normalMap: normalTexture,
         //normalMapType: THREE.TangentSpaceNormalMap,
         // roughness: 0.4,
@@ -169,10 +183,10 @@ export default {
         shininess: 50,
         side: THREE.DoubleSide
       });
-      store.state.activeModel.traverse((o) => {
+      this.activeModel.traverse((o) => {
         if (o.isMesh && o.name != null) {
           if (o.name == "mainmesh") {
-            o.material = store.state.activeMaterial;
+            o.material = this.activeMaterial;
           }
         }
       });

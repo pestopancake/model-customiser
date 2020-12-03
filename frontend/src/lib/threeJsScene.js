@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import store from '@/store'
+import activeProduct from '@/lib/activeProduct';
 
 export default {
   backgroundColour: '#f1f1f1',
@@ -38,34 +39,34 @@ export default {
     this.scene.fog = new THREE.Fog(this.backgroundColour, 1, 20);
   },
   clearScene() {
-    if (store.state.activeModel) {
-      this.scene.remove(store.state.activeModel);
+    if (activeProduct.activeModel) {
+      this.scene.remove(activeProduct.activeModel);
     }
-    if (store.state.activeMaterial) {
-      store.state.activeMaterial.dispose();
+    if (activeProduct.activeMaterial) {
+      activeProduct.activeMaterial.dispose();
     }
-    store.state.activeModel = null;
-    store.state.activeMaterial = null;
+    activeProduct.activeModel = null;
+    activeProduct.activeMaterial = null;
   },
   createRenderer() {
     const canvas = document.querySelector("#c");
-    store.state.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    store.state.renderer.setClearColor(0xff9900);
-    store.state.renderer.shadowMap.enabled = false;
-    store.state.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    this.renderer.setClearColor(0xff9900);
+    this.renderer.shadowMap.enabled = false;
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     // document.body.appendChild(state.renderer.domElement);
-    canvas.replaceWith(store.state.renderer.domElement);
+    canvas.replaceWith(this.renderer.domElement);
   },
   createCamera(state) {
-    store.state.camera = new THREE.PerspectiveCamera(
+    this.camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     );
-    store.state.camera.position.z = 2;
-    store.state.camera.position.x = 0;
-    store.state.camera.zoom = 1;
+    this.camera.position.z = 2;
+    this.camera.position.x = 0;
+    this.camera.zoom = 1;
   },
   createLights() {
     var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
@@ -100,29 +101,28 @@ export default {
     this.scene.add(floor);
   },
   createCameraControls() {
-    store.state.controls = new OrbitControls(store.state.camera, store.state.renderer.domElement);
-    // store.state.controls.maxPolarAngle = Math.PI / 2;
-    // store.state.controls.minPolarAngle = Math.PI / 2;
-    store.state.controls.maxPolarAngle = Math.PI;
-    store.state.controls.minPolarAngle = 0;
-    store.state.controls.minDistance = 1;
-    // store.state.controls.maxDistance = 3.5;
-    store.state.controls.zoomSpeed = 0.5;
-    store.state.controls.enableDamping = true;
-    store.state.controls.enablePan = false;
-    store.state.controls.dampingFactor = 0.1;
-    store.state.controls.autoRotate = false;
-    store.state.controls.autoRotateSpeed = 8;
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls.maxPolarAngle = Math.PI / 2;
+    // this.controls.minPolarAngle = Math.PI / 2;
+    this.controls.maxPolarAngle = Math.PI;
+    this.controls.minPolarAngle = 0;
+    this.controls.minDistance = 1;
+    // this.controls.maxDistance = 3.5;
+    this.controls.zoomSpeed = 0.5;
+    this.controls.enableDamping = true;
+    this.controls.enablePan = false;
+    this.controls.dampingFactor = 0.1;
+    this.controls.autoRotate = false;
+    this.controls.autoRotateSpeed = 8;
   },
   animate() {
-    var vm = store.state;
-    vm.controls.update();
-    vm.renderer.render(this.scene, vm.camera);
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
     window.animationFrameRequestId = requestAnimationFrame(() => this.animate());
-    if (this.resizeRendererToDisplaySize(vm.renderer)) {
-      const canvas = vm.renderer.domElement;
-      vm.camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      vm.camera.updateProjectionMatrix();
+    if (this.resizeRendererToDisplaySize(this.renderer)) {
+      const canvas = this.renderer.domElement;
+      this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      this.camera.updateProjectionMatrix();
     }
   },
   resizeRendererToDisplaySize(renderer) {

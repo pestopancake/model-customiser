@@ -60,7 +60,7 @@
         <template v-for="product in $store.state.config.products">
           <b-link
             class="btn"
-            :to="{ name: 'Product Editor', params: { id: product.id } }"
+            :to="{ name: 'Product Editor', params: { productid: product.id } }"
             :key="product.id"
           >
             {{ product.displayName }}
@@ -71,6 +71,7 @@
         <template v-for="design in $store.state.activeProduct.designs">
           <b-button
             class="btn mx-1"
+            :variant="($store.state.activeProduct.selectedDesign && $store.state.activeProduct.selectedDesign.name === design.name) ? 'primary' : ''"
             @click.prevent="selectDesign(design)"
             :key="design.path"
           >
@@ -78,17 +79,23 @@
           </b-button>
         </template>
       </div>
-      <div id="colour-swatches">
-        <template
-          v-for="colour in [
-            '#ff9900',
-            '#ff0099',
-            '#00ff99',
-            '#0099ff',
-            '#9900ff',
-            '#99ff00',
-          ]"
-        >
+      <div id="colours" class="my-2" v-if="$store.state.activeProduct">
+        <template v-for="colourPlacement in $store.state.activeProduct.colours">
+          <b-button
+            class="colour mx-2"
+            :variant="($store.state.activeProduct.selectedColourPlacement && $store.state.activeProduct.selectedColourPlacement.displayName === colourPlacement.displayName) ? 'primary' : ''"
+            :key="colourPlacement.displayName"
+            @click="
+              $store.state.activeProduct.selectedColourPlacement = colourPlacement;
+              designChanged();
+            "
+          >
+            {{ colourPlacement.displayName }}
+          </b-button>
+        </template>
+      </div>
+      <div id="colour-swatches" v-if="activeColourPalette">
+        <template v-for="colour in activeColourPalette.colours">
           <div
             class="colour-swatch"
             :style="{ 'background-color': colour }"
@@ -96,7 +103,7 @@
             v-on:mouseover="hoverColour(colour)"
             v-on:mouseout="hoverColour(null)"
             @click="
-              $store.state.selectedColour = colour;
+              $store.state.activeProduct.selectedColourPlacement.selectedColour = colour;
               designChanged();
             "
           ></div>
@@ -126,6 +133,19 @@ export default {
   async mounted() {
     this.selectProduct();
   },
+  computed: {
+    activeColourPalette() {
+      if (
+        this.$store.state.activeProduct &&
+        this.$store.state.activeProduct.selectedColourPlacement
+      ) {
+        return this.$store.state.config.colourPalettes[
+          this.$store.state.activeProduct.selectedColourPlacement.colourPalette
+        ];
+      }
+      return [];
+    },
+  },
   methods: {
     textChanged: _throttle(function () {
       this.designChanged();
@@ -133,12 +153,27 @@ export default {
     submitQuote() {
       this.$bvModal.show("quote-form-modal");
     },
-    selectProduct() {
-      if (router.currentRoute.params.id) {
+    async selectProduct() {
+      var productId = router.currentRoute.params.productid;
+      if (router.currentRoute.params.quoteid) {
+        //get quote & dump product into state
+        var url = "http://localhost:3000/";
+        var response = await fetch(
+          url + "quotes/" + router.currentRoute.params.quoteid + ".json",
+          {
+            mode: "no-cors",
+          }
+        );
+        var quote = await response.json();
+        console.log(quote);
         this.$store.dispatch(
           "selectProduct",
-          parseInt(router.currentRoute.params.id)
+          quote.product
         );
+        return true;
+      }
+      if (productId) {
+        this.$store.dispatch("selectProduct", parseInt(productId));
       } else {
         this.$store.dispatch(
           "selectProduct",

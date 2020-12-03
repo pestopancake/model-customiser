@@ -38,16 +38,17 @@ export default {
       this.handleSubmit();
     },
     async handleSubmit() {
-      var url = 'http://localhost:8112';
+      var url = 'http://productcustomiser.l/';
       var data = {
         form: this.formParams,
-        state: this.$store.state
+        product: this.$store.state.activeProduct
       }
       const response = await fetch(url, {
         method: 'POST',
-        body: JSON.stringify(data)
+        mode: "no-cors",
+        body: JSON.stringify(data),
       })
-      console.log(await response.json());
+      console.log(await response.text());
 
       this.$nextTick(() => {
         this.$bvModal.hide("quote-form-modal");
