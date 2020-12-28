@@ -86,7 +86,7 @@
             :variant="($store.state.activeProduct.selectedColourPlacement && $store.state.activeProduct.selectedColourPlacement.displayName === colourPlacement.displayName) ? 'primary' : ''"
             :key="colourPlacement.displayName"
             @click="
-              $store.state.activeProduct.selectedColourPlacement = colourPlacement;
+              $set($store.state.activeProduct, 'selectedColourPlacement', colourPlacement);
               designChanged();
             "
           >
@@ -98,12 +98,13 @@
         <template v-for="colour in activeColourPalette.colours">
           <div
             class="colour-swatch"
-            :style="{ 'background-color': colour }"
+            :class="{active: selectedColour == colour}"
+            :style="{ 'background-color': colour}"
             :key="colour"
             v-on:mouseover="hoverColour(colour)"
             v-on:mouseout="hoverColour(null)"
             @click="
-              $store.state.activeProduct.selectedColourPlacement.selectedColour = colour;
+              $set($store.state.activeProduct.selectedColourPlacement, 'selectedColour', colour);
               designChanged();
             "
           ></div>
@@ -134,6 +135,9 @@ export default {
     this.selectProduct();
   },
   computed: {
+    selectedColour(){
+      return this.$store.state.activeProduct.selectedColourPlacement.selectedColour
+    },
     activeColourPalette() {
       if (
         this.$store.state.activeProduct &&
@@ -157,7 +161,7 @@ export default {
       var productId = router.currentRoute.params.productid;
       if (router.currentRoute.params.quoteid) {
         //get quote & dump product into state
-        var url = "http://localhost:3000/";
+        var url = "http://localhost:8080/";
         var response = await fetch(
           url + "quotes/" + router.currentRoute.params.quoteid + ".json",
           {
@@ -165,7 +169,6 @@ export default {
           }
         );
         var quote = await response.json();
-        console.log(quote);
         this.$store.dispatch(
           "selectProduct",
           quote.product
@@ -182,7 +185,7 @@ export default {
       }
     },
     selectDesign(design) {
-      this.$store.state.activeProduct.selectedDesign = design;
+      this.$set(this.$store.state.activeProduct, 'selectedDesign', design);
       this.designChanged();
     },
     designChanged() {
@@ -246,6 +249,10 @@ export default {
     width: 50px;
     height: 50px;
     margin-left: 1vw;
+
+    &.active{
+      border: 3px solid #007bff;
+    }
   }
 }
 </style>
