@@ -2,7 +2,7 @@
   <div class="home">
     <img
       alt="Vue logo"
-      src="../assets/logo.png"
+      src="../assets/loading.png"
       v-show="$store.state.isLoading"
     />
     <SelectProduct />

@@ -35,7 +35,6 @@ export default {
         var roundRatio = ratio * rounds;
         for (var i = 1; i <= rounds; i++) {
 
-
             // tmp
             canvasCopy.width = imgWidth * roundRatio / i;
             canvasCopy.height = imgHeight * roundRatio / i;
@@ -47,7 +46,7 @@ export default {
             canvasCopy2.height = imgHeight * roundRatio / i;
             copyContext2.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvasCopy2.width, canvasCopy2.height);
 
-        } // end for
+        }
 
         canvas.width = imgWidth * roundRatio / rounds;
         canvas.height = imgHeight * roundRatio / rounds;
@@ -74,5 +73,21 @@ export default {
 
         var dataURL = canvas.toDataURL();
         return dataURL;
+    },
+    async uploadImage(imageElement) {
+        if (imageElement.url) return imageElement.filename;
+        const formData = new FormData()
+        formData.append('file', imageElement.value)
+
+        var response = await fetch('http://localhost:3000/assets.php', {
+            method: 'POST',
+            body: formData
+        });
+        var result = await response.json();
+        
+        if (result && result.filename) {
+            imageElement.url = result.filename;
+            return result.filename;
+        }
     }
 }

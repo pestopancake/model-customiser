@@ -6,7 +6,7 @@
       <router-link to="/">Select your jersey</router-link> |
       <router-link to="/about">About</router-link>
     </div>
-    <img alt="Vue logo" src="./assets/logo.png" v-show="$store.state.isLoading">
+    <img alt="Loading..." src="./assets/loading.png" v-show="$store.state.isLoading">
     <router-view/>
     <dev v-if="env === 'development'"></dev>
     <canvas id="texturecanvas"></canvas>

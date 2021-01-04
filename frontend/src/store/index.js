@@ -1,13 +1,27 @@
 /**
- * todo:
- * colour palettes & default colour
- * get config based on env (for multiple clients)
+ * todo
+ * move colour palettes & default colour into designs
  * store images with quote (upload and use url..)
- * loading overlay
- * save quote
- * load a saved quote
- * reset camera on change product
- * cors issue fetching from backend
+ * better loading overlay
+ * cors issue fetching from backend - local/dev need to work different
+ * quote - load in images (url attr)
+ * 
+ * admin
+ * list quotes, get SVG
+ * 
+ * UI tweaks
+ * reset camera on changing product (button to reset camera?)
+ * loading state for form + form submitted
+ * 
+ * backend
+ * email notification for new quote
+ * 
+ * 
+ * multiple clients
+ * config per client
+ * 
+ * ideas
+ * save svg + screenshot from client, can use as reference to check for errors
  */
 
 import Vue from 'vue'
@@ -43,9 +57,12 @@ export default new Vuex.Store({
         product = state.config.products.find(aProduct => aProduct.id === product);
       }
       if (!product) throw 'product not found';
-      if (state.activeProduct && state.activeProduct.id === product.id && !force) { 
-        return false;
+      if (state.activeProduct && state.activeProduct.id === product.id && !force) {
+        return false; // if the product is already selected do nothing
       }
+
+      Vue.set(product, 'selectedDesign', product.designs[0]);
+
       state.isLoading = true;
       threeJsScene.clearScene();
       state.activeProduct = product;

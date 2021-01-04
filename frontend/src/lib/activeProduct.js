@@ -8,6 +8,7 @@ import store from '@/store'
 import threeJsScene from '@/lib/threeJsScene';
 import assets from '@/lib/assets';
 import generic from '@/lib/generic';
+import images from '@/lib/images';
 
 export default {
   activeModel: null,
@@ -129,6 +130,8 @@ export default {
         imgpromise = generic.onload2promise(img);
         img.src = imgData;
         await imgpromise;
+
+        images.uploadImage(imageElement);
 
         let width = imageElement.maxWidth;
         resizeCanvas.width = width;

@@ -7,7 +7,7 @@ $json = file_get_contents('php://input');
 
 $data = json_decode($json);
 
-if($data){
+if ($data) {
     $pathPrefix = 'quotes';
     $id = uniqid();
     $filePath = "$pathPrefix/$id.json";

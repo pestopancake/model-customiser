@@ -3,7 +3,6 @@
         "default": {
             "colours": [
                 "#ff9900",
-                "#ff0099",
                 "#00ff99",
                 "#0099ff",
                 "#9900ff",
@@ -13,7 +12,7 @@
         "secondary": {
             "colours": [
                 "#ff9900",
-                "#ff0099",
+                "#99ff00",
                 "#00ff99"
             ]
         }
@@ -27,16 +26,16 @@
             "selectedColourPlacement": null,
             "designs": [
                 {
-                    "name": "design 1",
-                    "path": "/gltf/low2/lowpoly_design_1.svg"
+                    "name": "design 3",
+                    "path": "/gltf/low2/lowpoly_design_3.svg"
                 },
                 {
                     "name": "design 2",
                     "path": "/gltf/low2/lowpoly_design_2.svg"
                 },
                 {
-                    "name": "design 3",
-                    "path": "/gltf/low2/lowpoly_design_3.svg"
+                    "name": "design 1",
+                    "path": "/gltf/low2/lowpoly_design_1.svg"
                 }
             ],
             "colours": [
