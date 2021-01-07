@@ -81,6 +81,7 @@ export default {
 
         var response = await fetch('http://localhost:3000/assets.php', {
             method: 'POST',
+            mode: "cors",
             body: formData
         });
         var result = await response.json();

@@ -38,7 +38,7 @@ export default {
       this.handleSubmit();
     },
     async handleSubmit() {
-      var url = 'http://productcustomiser.l/';
+      var url = 'http://localhost:3000/';
       var data = {
         form: this.formParams,
         product: this.$store.state.activeProduct
@@ -48,7 +48,6 @@ export default {
         mode: "no-cors",
         body: JSON.stringify(data),
       })
-      console.log(await response.text());
 
       this.$nextTick(() => {
         this.$bvModal.hide("quote-form-modal");
