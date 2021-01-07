@@ -79,7 +79,7 @@ export default {
         const formData = new FormData()
         formData.append('file', imageElement.value)
 
-        var response = await fetch('http://localhost:3000/assets.php', {
+        var response = await fetch(process.env.VUE_APP_BACKEND_API_URL + '/assets.php', {
             method: 'POST',
             mode: "cors",
             body: formData

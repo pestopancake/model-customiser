@@ -38,7 +38,7 @@ export default {
       this.handleSubmit();
     },
     async handleSubmit() {
-      var url = 'http://localhost:3000/';
+      var url = process.env.VUE_APP_BACKEND_API_URL + '/';
       var data = {
         form: this.formParams,
         product: this.$store.state.activeProduct

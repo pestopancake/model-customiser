@@ -1,3 +1,6 @@
+// import dotenv from 'dotenv'
+// dotenv.config()
+require('dotenv').config()
 import '@babel/polyfill'
 import 'mutationobserver-shim'
 import Vue from 'vue'

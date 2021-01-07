@@ -7,11 +7,18 @@
           >texture snapshot</b-button
         >
       </b-button-group>
+      <b>state:</b>
       <ul class="list-group">
         <li>isInitiating: {{ $store.state.isInitiating }}</li>
         <li>isInitiated: {{ $store.state.isInitiated }}</li>
         <li>isLoading: {{ $store.state.isLoading }}</li>
         <li>isLoadingSoft: {{ $store.state.isLoadingSoft }}</li>
+      </ul>
+      <b>env:</b>
+      <ul class="list-group">
+        <li v-for="(v, k) of env" :key="v">
+          {{k}}:<br>{{v}}
+        </li>
       </ul>
     </div>
     <div>
@@ -24,7 +31,9 @@
 export default {
   name: "Dev",
   data() {
-    return {};
+    return {
+      env: process.env
+    };
   },
   methods: {
     textureSnapshot() {
