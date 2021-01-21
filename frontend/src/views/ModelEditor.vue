@@ -1,61 +1,149 @@
 <template>
   <div id="wrapper">
     <div id="ui">
-      <div class="text-input-wrapper" v-if="$store.state.activeProduct">
-        <b-container fluid="md">
-          <b-row
-            v-for="textElement in $store.state.activeProduct.textElements"
-            :key="textElement.name"
-            class="my-1 justify-content-md-left"
-          >
-            <b-col cols="3" md="2" class="text-right pr-0">
-              <label for="input-small">{{ textElement.name }}:</label>
-            </b-col>
-            <b-col col>
-              <b-form-input
-                type="text"
-                size="sm"
-                maxlength="20"
-                v-model="textElement.value"
-                v-on:keyup="textChanged()"
-              />
-            </b-col>
-          </b-row>
-        </b-container>
-      </div>
-      <div class="image-input-wrapper" v-if="$store.state.activeProduct">
-        <b-container fluid="md">
-          <b-row
-            v-for="imageElement in $store.state.activeProduct.imageElements"
-            :key="imageElement.name"
-            class="my-1 justify-content-md-left"
-          >
-            <b-col cols="3" md="2" class="text-right pr-0">
-              <label for="input-small">{{ imageElement.name }}:</label>
-            </b-col>
-            <b-col col>
-              <b-input-group>
-                <b-form-file
-                  v-model="imageElement.value"
-                  @change="designChanged()"
-                  accept="image/*"
-                  placeholder="Choose an image or drop it here..."
-                  drop-placeholder="Drop image here..."
-                ></b-form-file>
-                <b-button
-                  v-show="imageElement.value"
-                  @click="
-                    imageElement.value = null;
-                    designChanged();
-                  "
+      <div>
+        <b-card no-body id="ui-tabs">
+          <b-tabs content-class="mt-3" align="center" pills card end>
+            <b-tab title="Text" active>
+              <div class="text-input-wrapper" v-if="$store.state.activeProduct">
+                <b-container fluid="md">
+                  <b-row
+                    v-for="textElement in $store.state.activeProduct
+                      .textElements"
+                    :key="textElement.name"
+                    class="my-1 justify-content-md-left"
+                  >
+                    <b-col cols="3" md="2" class="text-right pr-0">
+                      <label for="input-small">{{ textElement.name }}:</label>
+                    </b-col>
+                    <b-col col>
+                      <b-form-input
+                        type="text"
+                        size="sm"
+                        maxlength="20"
+                        v-model="textElement.value"
+                        v-on:keyup="textChanged()"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-container>
+              </div>
+            </b-tab>
+            <b-tab title="Logos">
+              <div
+                class="image-input-wrapper"
+                v-if="$store.state.activeProduct"
+              >
+                <b-container fluid="md">
+                  <b-row
+                    v-for="imageElement in $store.state.activeProduct
+                      .imageElements"
+                    :key="imageElement.name"
+                    class="my-1 justify-content-md-left"
+                  >
+                    <b-col cols="3" md="2" class="text-right pr-0">
+                      <label for="input-small">{{ imageElement.name }}:</label>
+                    </b-col>
+                    <b-col col>
+                      <b-input-group>
+                        <b-form-file
+                          v-model="imageElement.value"
+                          @change="designChanged()"
+                          accept="image/*"
+                          placeholder="Choose an image or drop it here..."
+                          drop-placeholder="Drop image here..."
+                        ></b-form-file>
+                        <b-button
+                          v-show="imageElement.value"
+                          @click="
+                            imageElement.value = null;
+                            designChanged();
+                          "
+                        >
+                          <b-icon icon="x"></b-icon>
+                        </b-button>
+                      </b-input-group>
+                    </b-col>
+                  </b-row>
+                </b-container>
+              </div>
+            </b-tab>
+            <b-tab title="Design">
+              <div id="designs" v-if="$store.state.activeProduct">
+                <template v-for="design in $store.state.activeProduct.designs">
+                  <b-button
+                    class="btn mx-1"
+                    :variant="
+                      $store.state.activeProduct.selectedDesign &&
+                      $store.state.activeProduct.selectedDesign.name ===
+                        design.name
+                        ? 'primary'
+                        : ''
+                    "
+                    @click.prevent="selectDesign(design)"
+                    :key="design.path"
+                  >
+                    {{ design.name }}
+                  </b-button>
+                </template>
+              </div>
+              <div id="colours" class="my-2" v-if="$store.state.activeProduct">
+                <template
+                  v-for="colourPlacement in $store.state.activeProduct.colours"
                 >
-                  <b-icon icon="x"></b-icon>
-                </b-button>
-              </b-input-group>
-            </b-col>
-          </b-row>
-        </b-container>
+                  <b-button
+                    class="colour mx-2"
+                    :variant="
+                      $store.state.activeProduct.selectedColourPlacement &&
+                      $store.state.activeProduct.selectedColourPlacement
+                        .displayName === colourPlacement.displayName
+                        ? 'primary'
+                        : ''
+                    "
+                    :key="colourPlacement.displayName"
+                    @click="
+                      $set(
+                        $store.state.activeProduct,
+                        'selectedColourPlacement',
+                        colourPlacement
+                      );
+                      designChanged();
+                    "
+                  >
+                    {{ colourPlacement.displayName }}
+                  </b-button>
+                </template>
+              </div>
+              <div id="colour-swatches" v-if="activeColourPalette">
+                <template v-for="colour in activeColourPalette.colours">
+                  <div
+                    class="colour-swatch"
+                    :class="{ active: selectedColour == colour }"
+                    :style="{ 'background-color': colour }"
+                    :key="colour"
+                    v-on:mouseover="hoverColour(colour)"
+                    v-on:mouseout="hoverColour(null)"
+                    @click="
+                      $set(
+                        $store.state.activeProduct.selectedColourPlacement,
+                        'selectedColour',
+                        colour
+                      );
+                      designChanged();
+                    "
+                  ></div>
+                </template>
+              </div>
+            </b-tab>
+            <b-tab title="Submit">
+              <b-button class="btn mx-1 my-2" @click.prevent="submitQuote()">
+                Submit Quote
+              </b-button>
+            </b-tab>
+          </b-tabs>
+        </b-card>
       </div>
+
       <!-- <div id="models" class="my-2">
         <template v-for="product in $store.state.config.products">
           <b-link
@@ -67,52 +155,6 @@
           </b-link>
         </template>
       </div> -->
-      <div id="designs" v-if="$store.state.activeProduct">
-        <template v-for="design in $store.state.activeProduct.designs">
-          <b-button
-            class="btn mx-1"
-            :variant="($store.state.activeProduct.selectedDesign && $store.state.activeProduct.selectedDesign.name === design.name) ? 'primary' : ''"
-            @click.prevent="selectDesign(design)"
-            :key="design.path"
-          >
-            {{ design.name }}
-          </b-button>
-        </template>
-      </div>
-      <div id="colours" class="my-2" v-if="$store.state.activeProduct">
-        <template v-for="colourPlacement in $store.state.activeProduct.colours">
-          <b-button
-            class="colour mx-2"
-            :variant="($store.state.activeProduct.selectedColourPlacement && $store.state.activeProduct.selectedColourPlacement.displayName === colourPlacement.displayName) ? 'primary' : ''"
-            :key="colourPlacement.displayName"
-            @click="
-              $set($store.state.activeProduct, 'selectedColourPlacement', colourPlacement);
-              designChanged();
-            "
-          >
-            {{ colourPlacement.displayName }}
-          </b-button>
-        </template>
-      </div>
-      <div id="colour-swatches" v-if="activeColourPalette">
-        <template v-for="colour in activeColourPalette.colours">
-          <div
-            class="colour-swatch"
-            :class="{active: selectedColour == colour}"
-            :style="{ 'background-color': colour}"
-            :key="colour"
-            v-on:mouseover="hoverColour(colour)"
-            v-on:mouseout="hoverColour(null)"
-            @click="
-              $set($store.state.activeProduct.selectedColourPlacement, 'selectedColour', colour);
-              designChanged();
-            "
-          ></div>
-        </template>
-      </div>
-      <b-button class="btn mx-1 my-2" @click.prevent="submitQuote()">
-        Submit Quote
-      </b-button>
       <b-overlay :show="$store.state.isLoading" no-wrap></b-overlay>
       <QuoteFormModal />
     </div>
@@ -135,8 +177,9 @@ export default {
     this.selectProduct();
   },
   computed: {
-    selectedColour(){
-      return this.$store.state.activeProduct.selectedColourPlacement.selectedColour
+    selectedColour() {
+      return this.$store.state.activeProduct.selectedColourPlacement
+        .selectedColour;
     },
     activeColourPalette() {
       if (
@@ -169,10 +212,7 @@ export default {
           }
         );
         var quote = await response.json();
-        this.$store.dispatch(
-          "selectProduct",
-          quote.product
-        );
+        this.$store.dispatch("selectProduct", quote.product);
         return true;
       }
       if (productId) {
@@ -185,7 +225,7 @@ export default {
       }
     },
     selectDesign(design) {
-      this.$set(this.$store.state.activeProduct, 'selectedDesign', design);
+      this.$set(this.$store.state.activeProduct, "selectedDesign", design);
       this.designChanged();
     },
     designChanged() {
@@ -229,12 +269,17 @@ export default {
 }
 #ui {
   // border-top: 5px solid #d0d0d0;
-  background-color: rgba(200, 200, 200, 0.7);
-  font-weight: bold;
-  padding-top: 10px;
+  // background-color: rgba(200, 200, 200, 0.7);
+  // font-weight: bold;
+  // padding-top: 10px;
   position: fixed;
   bottom: 0;
   width: 100%;
+
+  #ui-tabs {
+    max-width: 1024px;
+    margin: 0 auto;
+  }
 }
 #colour-swatches {
   margin-top: 20px;
@@ -250,7 +295,7 @@ export default {
     height: 50px;
     margin-left: 1vw;
 
-    &.active{
+    &.active {
       border: 3px solid #007bff;
     }
   }
