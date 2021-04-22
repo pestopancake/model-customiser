@@ -37,6 +37,8 @@ class App extends Component
                         fn () => $v->nav(
                             $v->a('Home')->href(route('home'))
                                 ->class(Request::is('home') ? 'text-blue-600' : 'text-gray-500'),
+                            $v->a('Quotes')->href(route('quotes'))
+                                ->class(Request::is('quotes') ? 'text-blue-600' : 'text-gray-500'),
                             $v->a('Logout')->href(route('logout'))
                                 ->class('text-gray-500'),
                         )->class('flex space-x-4')

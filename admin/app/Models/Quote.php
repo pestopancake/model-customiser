@@ -8,10 +8,18 @@ use Redbastie\Tailwire\Model;
 
 class Quote extends Model
 {
+
+    public $casts = [
+        'data' => 'array'
+    ];
+
     public function migration(Blueprint $table)
     {
         $table->id();
         $table->string('name');
+        $table->string('email');
+        $table->json('data');
+
         $table->timestamp('created_at')->nullable();
         $table->timestamp('updated_at')->nullable();
     }
@@ -20,6 +28,8 @@ class Quote extends Model
     {
         return [
             'name' => $faker->name,
+            'email' => $faker->email,
+            'data' => $faker->data,
         ];
     }
 }

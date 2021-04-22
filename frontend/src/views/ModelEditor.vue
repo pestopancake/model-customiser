@@ -201,20 +201,26 @@ export default {
       this.$bvModal.show("quote-form-modal");
     },
     async selectProduct() {
-      var productId = router.currentRoute.params.productid;
+      // get quote & load product into state
       if (router.currentRoute.params.quoteid) {
-        //get quote & dump product into state
-        var url = "http://localhost:8080/";
-        var response = await fetch(
-          url + "quotes/" + router.currentRoute.params.quoteid + ".json",
+        var url = process.env.VUE_APP_BACKEND_API_URL;
+        var request = await fetch(
+          url + "quote/" + router.currentRoute.params.quoteid,
           {
-            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            mode: "cors",
           }
-        );
-        var quote = await response.json();
-        this.$store.dispatch("selectProduct", quote.product);
+        )
+        var response = await request.json();
+        var quote = response.data;
+        
+        this.$store.dispatch("selectProduct", quote.data, true);
         return true;
       }
+
+      var productId = router.currentRoute.params.productid;
       if (productId) {
         this.$store.dispatch("selectProduct", parseInt(productId));
       } else {

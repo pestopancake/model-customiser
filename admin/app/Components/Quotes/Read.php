@@ -17,9 +17,20 @@ class Read extends Component
             fn () => $v->section(
                 $v->div(
                     $v->div(
-                        $v->h1('Quote')->class('text-xl'),
+                        $v->div(
+                            $v->h1('Quote')->class('text-xl inline-block'),
+
+                            $v->a(
+                                $v->span('3D view'),
+                                $v->icon('external-link')->class('text-white-600 w-5 h-5 ml-2')
+                            )
+                                ->class('inline-flex items-center h-8 px-4 m-2 text-sm text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800')
+                                ->href(config('project.frontend_base_url') . '/quote/' . $this->quote->id)
+                                ->target('_blank'),
+                        ),
                         $v->button($v->icon('x')->wireClick('toggleShow')->class('text-gray-500 w-5 h-5'))
                     )->class('flex items-center justify-between px-6 py-4'),
+
 
                     $v->div(
                         $v->dl(
@@ -30,6 +41,16 @@ class Read extends Component
                         $v->dl(
                             $v->dt('Name')->class('text-xs text-gray-500'),
                             $v->dd($this->quote->name)
+                        ),
+
+                        $v->dl(
+                            $v->dt('Email')->class('text-xs text-gray-500'),
+                            $v->dd($this->quote->email)
+                        ),
+
+                        $v->dl(
+                            $v->dt('Quote')->class('text-xs text-gray-500'),
+                            $v->pre(json_encode($this->quote->data, JSON_PRETTY_PRINT))
                         ),
 
                         $v->dl(

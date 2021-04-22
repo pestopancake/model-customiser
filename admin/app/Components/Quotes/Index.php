@@ -43,6 +43,10 @@ class Index extends Component
                         $v->div(
                             $v->button($v->icon('eye'))->wireClick('$emitTo', 'quotes.read', 'show', $quote->id)
                                 ->class('text-blue-600 w-5 h-5'),
+                            $v->a($v->icon('external-link'))
+                                ->href(config('project.frontend_base_url') . '/quote/' . $quote->id)
+                                ->target('blank')
+                                ->class('text-blue-600 w-5 h-5'),
                             $v->button($v->icon('pencil-alt'))->wireClick('$emitTo', 'quotes.save', 'show', $quote->id)
                                 ->class('text-blue-600 w-5 h-5'),
                             $v->button($v->icon('trash'))->wireClick('delete', $quote->id)->confirm('Delete this Quote?')

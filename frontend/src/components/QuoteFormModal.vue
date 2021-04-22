@@ -38,14 +38,19 @@ export default {
       this.handleSubmit();
     },
     async handleSubmit() {
-      var url = process.env.VUE_APP_BACKEND_API_URL + '/';
+      var url = process.env.VUE_APP_BACKEND_API_URL;
       var data = {
-        form: this.formParams,
-        product: this.$store.state.activeProduct
+        name: this.formParams.name,
+        email: this.formParams.email,
+        data: this.$store.state.activeProduct
       }
-      const response = await fetch(url, {
+      console.log(data)
+      const response = await fetch(url + 'quote/create', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
         method: 'POST',
-        mode: "no-cors",
+        mode: "cors",
         body: JSON.stringify(data),
       })
 

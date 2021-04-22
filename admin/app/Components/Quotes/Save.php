@@ -31,6 +31,15 @@ class Save extends Component
                     )->class('space-y-4 p-6'),
 
                     $v->div(
+                        $v->div(
+                            $v->label('Email')->for('email'),
+                            $v->input()->id('email')->wireModelDefer('email')
+                                ->class(($this->error('email') ? 'border-red-500' : 'border-gray-300') . ' rounded-lg w-full'),
+                            $v->if($this->error('email'), fn () => $v->p($this->error('email'))->class('text-xs text-red-600'))
+                        )->class('space-y-1'),
+                    )->class('space-y-4 p-6'),
+
+                    $v->div(
                         $v->button('Cancel')->wireClick('toggleShow')->class('text-white bg-gray-500 rounded-lg px-3 py-2'),
                         $v->button('Save')->type('submit')->class('text-white bg-blue-600 rounded-lg px-3 py-2')
                     )->class('flex justify-end space-x-4 px-6 py-4'),
@@ -43,6 +52,7 @@ class Save extends Component
     {
         $validated = $this->validate([
             'name' => ['required'],
+            'email' => ['required'],
         ]);
 
         if ($this->quote->exists) {
