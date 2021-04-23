@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import store from '@/store'
@@ -57,16 +56,16 @@ export default {
     // document.body.appendChild(state.renderer.domElement);
     canvas.replaceWith(this.renderer.domElement);
   },
-  createCamera(state) {
+  createCamera() {
     this.camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      100
     );
     this.camera.position.z = 2;
     this.camera.position.x = 0;
-    this.camera.zoom = 1;
+    this.camera.zoom = 1.2;
   },
   createLights() {
     var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61);
@@ -102,18 +101,18 @@ export default {
   },
   createCameraControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.controls.maxPolarAngle = Math.PI / 2;
-    // this.controls.minPolarAngle = Math.PI / 2;
-    this.controls.maxPolarAngle = Math.PI;
-    this.controls.minPolarAngle = 0;
+    this.controls.maxPolarAngle = Math.PI / 2;
+    this.controls.minPolarAngle = Math.PI / 2;
+    // this.controls.maxPolarAngle = Math.PI;
+    // this.controls.minPolarAngle = 0;
     this.controls.minDistance = 1;
-    // this.controls.maxDistance = 3.5;
-    this.controls.zoomSpeed = 0.5;
+    this.controls.maxDistance = 3.5;
+    this.controls.zoomSpeed = 1;
     this.controls.enableDamping = true;
     this.controls.enablePan = false;
-    this.controls.dampingFactor = 0.1;
+    this.controls.dampingFactor = 0.06;
     this.controls.autoRotate = false;
-    this.controls.autoRotateSpeed = 8;
+    this.controls.autoRotateSpeed = 3;
   },
   animate() {
     this.controls.update();
