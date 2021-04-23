@@ -76,19 +76,21 @@ export default {
     },
     async uploadImage(imageElement) {
         if (imageElement.url) return imageElement.filename;
-        const formData = new FormData()
-        formData.append('file', imageElement.value)
+        return;
+        //todo: this;
+        // const formData = new FormData()
+        // formData.append('file', imageElement.value)
 
-        var response = await fetch(process.env.VUE_APP_BACKEND_API_URL + '/assets.php', {
-            method: 'POST',
-            mode: "cors",
-            body: formData
-        });
-        var result = await response.json();
+        // var response = await fetch(process.env.VUE_APP_BACKEND_API_URL + '/assets.php', {
+        //     method: 'POST',
+        //     mode: "cors",
+        //     body: formData
+        // });
+        // var result = await response.json();
         
-        if (result && result.filename) {
-            imageElement.url = result.filename;
-            return result.filename;
-        }
+        // if (result && result.filename) {
+        //     imageElement.url = result.filename;
+        //     return result.filename;
+        // }
     }
 }
