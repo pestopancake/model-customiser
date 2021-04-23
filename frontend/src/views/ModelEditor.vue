@@ -2,73 +2,10 @@
   <div id="wrapper">
     <div id="ui">
       <div>
-        <b-card no-body id="ui-tabs">
+        <b-card no-body id="ui-tabs" class="shadow">
           <b-tabs content-class="mt-3" align="center" pills card end>
-            <b-tab title="Text" active>
-              <div class="text-input-wrapper" v-if="$store.state.activeProduct">
-                <b-container fluid="md">
-                  <b-row
-                    v-for="textElement in $store.state.activeProduct
-                      .textElements"
-                    :key="textElement.name"
-                    class="my-1 justify-content-md-left"
-                  >
-                    <b-col cols="3" md="2" class="text-right pr-0">
-                      <label for="input-small">{{ textElement.name }}:</label>
-                    </b-col>
-                    <b-col col>
-                      <b-form-input
-                        type="text"
-                        size="sm"
-                        maxlength="20"
-                        v-model="textElement.value"
-                        v-on:keyup="textChanged()"
-                      />
-                    </b-col>
-                  </b-row>
-                </b-container>
-              </div>
-            </b-tab>
-            <b-tab title="Logos">
-              <div
-                class="image-input-wrapper"
-                v-if="$store.state.activeProduct"
-              >
-                <b-container fluid="md">
-                  <b-row
-                    v-for="imageElement in $store.state.activeProduct
-                      .imageElements"
-                    :key="imageElement.name"
-                    class="my-1 justify-content-md-left"
-                  >
-                    <b-col cols="3" md="2" class="text-right pr-0">
-                      <label for="input-small">{{ imageElement.name }}:</label>
-                    </b-col>
-                    <b-col col>
-                      <b-input-group>
-                        <b-form-file
-                          v-model="imageElement.value"
-                          @change="designChanged()"
-                          accept="image/*"
-                          placeholder="Choose an image or drop it here..."
-                          drop-placeholder="Drop image here..."
-                        ></b-form-file>
-                        <b-button
-                          v-show="imageElement.value"
-                          @click="
-                            imageElement.value = null;
-                            designChanged();
-                          "
-                        >
-                          <b-icon icon="x"></b-icon>
-                        </b-button>
-                      </b-input-group>
-                    </b-col>
-                  </b-row>
-                </b-container>
-              </div>
-            </b-tab>
-            <b-tab title="Design">
+            
+            <b-tab title="Design" active>
               <div id="designs" v-if="$store.state.activeProduct">
                 <template v-for="design in $store.state.activeProduct.designs">
                   <b-button
@@ -133,6 +70,70 @@
                     "
                   ></div>
                 </template>
+              </div>
+            </b-tab>
+            <b-tab title="Text" v-if="$store.state.activeProduct && $store.state.activeProduct.textElements.length">
+              <div class="text-input-wrapper" v-if="$store.state.activeProduct">
+                <b-container fluid="md">
+                  <b-row
+                    v-for="textElement in $store.state.activeProduct
+                      .textElements"
+                    :key="textElement.name"
+                    class="my-1 justify-content-md-left"
+                  >
+                    <b-col cols="5" md="4" class="text-right pr-0">
+                      <label for="input-small">{{ textElement.name }}:</label>
+                    </b-col>
+                    <b-col col>
+                      <b-form-input
+                        type="text"
+                        size="sm"
+                        maxlength="20"
+                        v-model="textElement.value"
+                        v-on:keyup="textChanged()"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-container>
+              </div>
+            </b-tab>
+            <b-tab title="Logos" v-if="$store.state.activeProduct && $store.state.activeProduct.imageElements.length">
+              <div
+                class="image-input-wrapper"
+                v-if="$store.state.activeProduct"
+              >
+                <b-container fluid="md">
+                  <b-row
+                    v-for="imageElement in $store.state.activeProduct
+                      .imageElements"
+                    :key="imageElement.name"
+                    class="my-1 justify-content-md-left"
+                  >
+                    <b-col cols="5" md="4" class="text-right pr-0">
+                      <label for="input-small">{{ imageElement.name }}:</label>
+                    </b-col>
+                    <b-col col>
+                      <b-input-group>
+                        <b-form-file
+                          v-model="imageElement.value"
+                          @change="designChanged()"
+                          accept="image/*"
+                          placeholder=""
+                          drop-placeholder="Drop image here..."
+                        ></b-form-file>
+                        <b-button
+                          v-show="imageElement.value"
+                          @click="
+                            imageElement.value = null;
+                            designChanged();
+                          "
+                        >
+                          <b-icon icon="x"></b-icon>
+                        </b-button>
+                      </b-input-group>
+                    </b-col>
+                  </b-row>
+                </b-container>
               </div>
             </b-tab>
             <b-tab title="Submit">
@@ -280,11 +281,15 @@ export default {
   // padding-top: 10px;
   position: fixed;
   bottom: 0;
-  width: 100%;
+  right: 0;
+  margin: 0 10px 10px 0;
+  width: 500px;
 
   #ui-tabs {
-    max-width: 1024px;
-    margin: 0 auto;
+    // max-width: 500px;
+    width: 100%;
+    height: 100%;
+    
   }
 }
 #colour-swatches {
