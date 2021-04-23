@@ -20,7 +20,7 @@
     "products": [
         {
             "id": 1,
-            "displayName": "Low Poly",
+            "displayName": "Test Product 1",
             "modelPath": "/gltf/low2/lowpoly.gltf",
             "modelTexturePath": "/gltf/low2/UV_Tested.png",
             "selectedColourPlacement": null,
@@ -93,38 +93,7 @@
         },
         {
             "id": 2,
-            "displayName": "Low Poly Old",
-            "modelPath": "/gltf/low/LowPolyShirt.gltf",
-            "modelTexturePath": "/gltf/low/lowpoly.png",
-            "selectedColourPlacement": null,
-            "designs": [
-                {
-                    "name": "design 1",
-                    "path": "/gltf/low/lowdesign.svg"
-                }
-            ],
-            "textElements": [
-                {
-                    "name": "Front text",
-                    "value": "test front",
-                    "position": {
-                        "x": 850,
-                        "y": 350
-                    }
-                },
-                {
-                    "name": "Back text",
-                    "value": "test back",
-                    "position": {
-                        "x": 850,
-                        "y": 1450
-                    }
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "displayName": "Jersey",
+            "displayName": "Test Product 2",
             "modelPath": "/gltf/jersey1/scene.gltf",
             "modelTexturePath": "/gltf/jersey1/textures/SSJersey_Outside_Lines_diffuse.jpeg",
             "selectedColourPlacement": null,
@@ -132,6 +101,42 @@
                 {
                     "name": "design 1",
                     "path": "/gltf/jersey1/textures/colourmap.svg"
+                }
+            ],
+            "colours": [
+                {
+                    "colourMap": "#ff9900",
+                    "defaultColour": "#ff9900",
+                    "displayName": "Primary colour",
+                    "colourPalette": "default"
+                },
+                {
+                    "colourMap": "#ff0099",
+                    "defaultColour": "#ff9900",
+                    "displayName": "Secondary colour",
+                    "colourPalette": "secondary"
+                }
+            ],
+            "textElements": [
+            ],
+            "imageElements": [
+                {
+                    "name": "Front image",
+                    "value": null,
+                    "maxWidth": "200",
+                    "position": {
+                        "x": 1500,
+                        "y": 1050
+                    }
+                },
+                {
+                    "name": "Back image",
+                    "value": null,
+                    "maxWidth": "200",
+                    "position": {
+                        "x": 450,
+                        "y": 1100
+                    }
                 }
             ]
         }
