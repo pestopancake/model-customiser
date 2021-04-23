@@ -121,21 +121,21 @@
             ],
             "imageElements": [
                 {
-                    "name": "Front image",
+                    "name": "Front image 1",
                     "value": null,
                     "maxWidth": "200",
                     "position": {
-                        "x": 1500,
-                        "y": 1050
+                        "x": 1200,
+                        "y": 1250
                     }
                 },
                 {
-                    "name": "Back image",
+                    "name": "Front image 2",
                     "value": null,
                     "maxWidth": "200",
                     "position": {
-                        "x": 450,
-                        "y": 1100
+                        "x": 1600,
+                        "y": 1250
                     }
                 }
             ]

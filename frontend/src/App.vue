@@ -7,7 +7,7 @@
             v-show="$store.state.isLoading || $store.state.isLoadingSoft"
         ></b-spinner>
         <div id="nav">
-            <router-link to="/">Select your jersey</router-link>
+            <router-link to="/">Select a product</router-link>
             <!-- <router-link to="/about">About</router-link> -->
         </div>
         <!-- <img alt="Loading..." src="./assets/loading.png" v-show="$store.state.isLoading"> -->
